@@ -6,7 +6,13 @@
 
 	</br>
 
-	<!-- <form action="{{ URL::to('user/' . $user->id) }}" method="put"> -->
+	@if($errors->has())
+		<ul>
+	   	@foreach ($errors->all() as $error)
+	      <li>{{ $error }}</li>
+	  	@endforeach
+	  </ul>
+	@endif
 
 	{{ Form::model($user, array('route' => array('user.update', $user->id), 'method' => 'PUT')) }}
 
@@ -29,9 +35,6 @@
       <label for="admin"> Make Admin User </label>
       <input @if (!Auth::user()->isAdmin()) disabled readonly @endif class="checkbox-inline" id="admin" type="checkbox" name="admin" @if($user['admin']== 1) checked @endif> 
     </div>
-
-    <!-- <button type="submit" class="btn btn-primary"> Submit </button>
-    <input type="hidden" name="_token" value="{{ Session::token()}}"> -->
 
 		{{ Form::submit('Submit', array('class' => 'btn btn-primary')) }}
 

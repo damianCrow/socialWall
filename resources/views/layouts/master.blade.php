@@ -11,8 +11,16 @@
   </head>
   <body>
 
-  	@include('partials.logIn')
+  	@include('partials.navBar')
   	
-  	<div id="wrapper" class="container">@yield('content')</div>
+  	<div id="wrapper" class="container">
+
+      @if (Session::has('message'))
+        <div class="alert alert-info">{{ Session::get('message') }}</div>
+      @endif
+
+      @yield('content')
+      
+    </div>
   </body>
 </html>
