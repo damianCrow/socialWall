@@ -3,7 +3,7 @@
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">socialWall</a>
+      <a class="navbar-brand" href="@if(!Auth::user()) {{ URL::to('/') }} @else {{ URL::to('dashboard') }} @endif">socialWall</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -34,11 +34,14 @@
               <li><a tabindex="-1" href="#"> Edit Existing Theme </a></li>
             </ul>
           </li>
-          <li @if (Request::path() == "adduser") class="active" @endif>
+          <li @if (strpos($_SERVER['REQUEST_URI'], "user") !== false) class="active" @endif>
+
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Account
               <span class="caret"></span>
             </a>
+
             <ul class="dropdown-menu">
+            
               <li><a tabindex="-1" href="{{ URL::to('user/' . Auth::user()->id . '/edit') }}"> Edit My Account </a></li>
 
               @if (Auth::user()->isAdmin())
@@ -51,7 +54,7 @@
             <a href="{{ url('/') }}" class="btn-default btn-default" role="button"> Sign Out </a>
           </li>
         </ul>
-        
+
       @endif
       
     </div><!-- /.navbar-collapse -->

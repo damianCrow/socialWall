@@ -8,7 +8,6 @@
 	use View;
 	use Input;	
 	use Validator;
-	use Html;
 
 	class userController extends Controller {	
 
@@ -77,7 +76,7 @@
 
 			$user -> save();
 
-			Session::flash('message', 'Successfully created new user!');
+			Session::flash('message', 'You have successfully created a new user.');
 
 			return redirect() -> route('dashboard');
 		}
@@ -96,7 +95,7 @@
 			$user = User::find($id);
 
 			$rules = [
-				'email' => 'required|email|unique:users',
+				'email' => 'required|email',
 				'username' => 'required|max:80',
 				'password' => 'required|min:6',
 			];
@@ -104,19 +103,19 @@
       $validator = Validator::make($request, $rules);
 
 
-   //    if($request['admin'] != undefined) {
+      if(array_key_exists('admin', $request)) {
 
-		 //  	$userIsAdmin = true;
-			// }
-			// else {
+		  	$userIsAdmin = true;
+			}
+			else {
 
-			//   $userIsAdmin = false;  
-			// }
+			  $userIsAdmin = false;  
+			}
 
 			$email = $request['email'];
 			$username = $request['username'];
 			$password = bcrypt($request['password']);
-			// $admin = $userIsAdmin;
+			$admin = $userIsAdmin;
 
 
       if ($validator->fails()) {
@@ -131,11 +130,11 @@
 				$user -> email = $email;
 				$user -> username = $username;
 				$user -> password = $password;
-				// $user -> admin = $userIsAdmin;
+				$user -> admin = $userIsAdmin;
 
 				$user -> save();
 
-        Session::flash('message', 'Successfully updated user!');
+        Session::flash('message', 'You have successfully updated the user information.');
 
         return redirect() -> route('dashboard');
       }
@@ -146,8 +145,9 @@
     	$user = User::find($id);
       $user->delete();
 
-      Session::flash('message', 'Successfully deleted the user!');
-      return redirect() -> route('user');
+      Session::flash('message', 'You have successfully deleted this user!');
+
+      return redirect() -> route('dashboard');
     }
 	}
 ?>

@@ -33,6 +33,7 @@
 
     <div class="form-group">
       <label for="admin"> Make Admin User </label>
+      
       <input @if (!Auth::user()->isAdmin()) disabled readonly @endif class="checkbox-inline" id="admin" type="checkbox" name="admin" @if($user['admin']== 1) checked @endif> 
     </div>
 

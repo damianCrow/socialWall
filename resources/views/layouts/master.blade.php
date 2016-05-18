@@ -16,11 +16,18 @@
   	<div id="wrapper" class="container">
 
       @if (Session::has('message'))
-        <div class="alert alert-info">{{ Session::get('message') }}</div>
+        <div class="alert alert-success fade in">
+          <h4 class="alert-message"> 
+
+            {{ Session::get('message') }}
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+
+          </h4>
+        </div>
       @endif
 
       @yield('content')
-      
+
     </div>
   </body>
 </html>

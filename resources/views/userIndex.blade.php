@@ -23,15 +23,25 @@
 
       <a class="btn btn-sm btn-info" href="{{ URL::to('user/' . $user->id . '/edit') }}">Edit User</a>
 
-      {{ Form::open(array('url' => 'user/' . $user->id, 'class' => 'side-by-side')) }}
+      {{ Form::open(array('url' => 'user/' . $user->id, 'class' => 'delete side-by-side')) }}
           {{ Form::hidden('_method', 'DELETE') }}
           {{ Form::submit('Delete This User', array('class' => 'btn btn-sm btn-danger')) }}
       {{ Form::close() }}
       	
 			</li>
     </ul>
+
     </br>
 
   @endforeach
+
+  <script>
+
+    $(".delete").on("submit", function() {
+
+       return confirm("Are you sure you want to delete this user?");
+    });
+
+	</script>
 @endsection
 
