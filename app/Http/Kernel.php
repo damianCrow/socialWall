@@ -49,5 +49,7 @@ class Kernel extends HttpKernel
         'guest' => \socialwall\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'admin' => \socialwall\Http\Middleware\Admin::class,
+        'before' => \socialwall\Http\Middleware\BeforeDbQueryMiddleware::class,
+        'after' => \socialwall\Http\Middleware\afterDbQueryMiddleware::class,
     ];
 }

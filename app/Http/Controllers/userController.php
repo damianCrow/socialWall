@@ -11,6 +11,17 @@
 
 	class userController extends Controller {	
 
+		public function __construct() {
+
+        $this->middleware('auth');
+
+        $this->middleware('admin', ['except' => ['dashboard', 'signIn', 'update', 'edit']]);
+
+        $this->middleware('before', ['only' => ['destroy']]);
+
+        $this->middleware('after', ['except' => ['dashboard', 'signIn', 'index']]);
+    }
+
 		public function dashboard() {
 
 			return view('dashboard');
