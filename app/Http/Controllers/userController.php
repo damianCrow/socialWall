@@ -31,7 +31,7 @@
 
 			$this -> validate($request, [
 				'username' => 'required',
-				'password' => 'required'
+				'password' => 'required|min:6'
 			]);
 
 			if(Auth::attempt(['username' => $request['username'], 'password' => $request['password']])) {

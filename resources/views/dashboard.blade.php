@@ -2,6 +2,6 @@
 
 @section('content')
 
-<h1>Dashboard</h1>
+<h1>Hello, welcome to socialWall {{ Auth::user()['username'] }}</h1>
 
 @endsection

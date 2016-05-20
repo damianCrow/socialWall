@@ -15,7 +15,7 @@ class BeforeDbQueryMiddleware  {
 
            $deletedUser = User::find($request->segment(2));
            
-           Log::info(Auth::user()['username'], ['deleted user ' => [$deletedUser['id'], $deletedUser['username'], $deletedUser['email']]]);
+           Log::info(Auth::user()['username'], ['deleted user' => ['id' => $deletedUser['id'], 'username' => $deletedUser['username'], 'email' => $deletedUser['email']]]);
         }
 
         return $next($request);
