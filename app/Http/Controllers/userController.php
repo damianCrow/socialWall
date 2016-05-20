@@ -13,7 +13,7 @@
 
 		public function __construct() {
 
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['signIn']]);
 
         $this->middleware('admin', ['except' => ['dashboard', 'signIn', 'update', 'edit']]);
 
@@ -40,7 +40,7 @@
 			}
 			else {
 
-				return redirect() -> back();
+				return redirect() -> back()->withInput()->with('message', 'Login Attempt Failed! Incorrect username or password');
 			}
 		}
 

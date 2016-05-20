@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Log;
 use socialwall\User;
 
-class afterDbQueryMiddleware
-{
+class afterDbQueryMiddleware {
     
     public function handle($request, Closure $next) {
 

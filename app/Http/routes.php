@@ -2,8 +2,7 @@
 
 Route::group(['middleware' => ['web']], function () {
 
-	Route::get('/', 
-    function () {
+	Route::get('/', function() {
 
     Auth::logout();
     return view('welcome');

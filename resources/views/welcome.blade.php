@@ -23,7 +23,7 @@
 
       <h2> Log In </h2>
       
-      <form action="{{ route('signin') }}" method="post">
+      {{ Form::open(array('url' => 'signin')) }}
 
         <div class="form-group {{ $errors -> has('username') ? 'has-error' : ''}}">
           <label for="username"> Enter Username </label>
@@ -35,9 +35,10 @@
           <input class="form-control" type="password" name="password" value="{{ Request::old('password')}}">
         </div>
 
-        <button type="submit" class="btn btn-primary"> Submit </button>
-        <input type="hidden" name="_token" value="{{ Session::token()}}">
-      </form>
+      {{ Form::hidden('_method', 'POST') }}
+          {{ Form::submit('Submit', array('class' => 'btn btn-primary')) }}
+      {{ Form::close() }}
+      
     </div>
   </div>
 @endsection
