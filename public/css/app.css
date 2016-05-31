@@ -5757,7 +5757,13 @@ button.close {
 .side-by-side {
   display: inline-block; }
 
+.vertical-spacer {
+  margin-bottom: 1%; }
+
 .alert > .alert-message {
   margin: 10px; }
+
+.block {
+  display: block; }
 
 /*# sourceMappingURL=app.css.map */

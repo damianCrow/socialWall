@@ -15,12 +15,12 @@
           <li @if (Route::current()->getUri() === "dashboard") class="active" @endif>
             <a href="{{ route('dashboard') }}"> Home </a>
           </li>
-          <li>
+          <li @if (strpos($_SERVER['REQUEST_URI'], "socialWall") !== false) class="active" @endif>
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"> socialWall
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a tabindex="-1" href="#"> Create New socialWall </a></li>
+              <li><a tabindex="-1" href="{{ URL::to('socialWall/create') }}"> Create New socialWall </a></li>
               <li><a tabindex="-1" href="#"> Edit Existing socialWall </a></li>
               <li><a tabindex="-1" href="#"> Run socialWall </a></li>
             </ul>
@@ -57,7 +57,7 @@
 
       @endif
       
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+    </div>
+  </div>
 </nav>
 </header>

@@ -20,6 +20,13 @@ Route::group(['middleware' => ['web']], function () {
   ]);
 
   Route::resource('user', 'userController');
+
+  Route::resource('socialWall', 'socialWallController');
+
+  Route::get('/test', [
+    'uses' => 'mediaController@twitterMedia',
+    'as' => 'test'
+  ]);
 });
 
 ?>

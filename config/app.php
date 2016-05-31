@@ -156,7 +156,7 @@ return [
         socialwall\Providers\AuthServiceProvider::class,
         socialwall\Providers\EventServiceProvider::class,
         socialwall\Providers\RouteServiceProvider::class,
-
+        // socialwall\GuzzleHttp\Client::class,
     ],
 
     /*
