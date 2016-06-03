@@ -17,21 +17,24 @@
 
   	@include('partials.navBar')
   	
-  	<div id="wrapper" class="container">
+  	<div id="wrapper" class="container-fluid">
 
-      @if (Session::has('message'))
-        <div class="alert alert-success fade in">
-          <h4 class="alert-message"> 
+      <div class="row-fluid col-md-10 col-md-offset-1">
 
-            {{ Session::get('message') }}
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @if (Session::has('message'))
+          <div class="alert alert-success fade in">
+            <h4 class="alert-message"> 
 
-          </h4>
-        </div>
-      @endif
+              {{ Session::get('message') }}
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 
-      @yield('content')
+            </h4>
+          </div>
+        @endif
 
+        @yield('content')
+
+      </div>
     </div>
   </body>
 </html>

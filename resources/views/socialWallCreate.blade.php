@@ -14,7 +14,7 @@
     </div>
   @endif 
 
-  <div class="col-md-10 col-md-offset-1 form-inline">
+  <div class="col-md-12 col-md-offset-1 form-inline">
 
     <h2 class="vertical-spacer"> Create New socialWall </h2>
     
@@ -29,7 +29,7 @@
 
         <label class="block" for="mediachannels[]"> Select Media Channels </label>
 
-        <select id="mediachannels" name="mediachannels[]" class="hide form-control" value="{{ Request::old('mediachannels')}}" multiple>
+        <select id="mediachannels" name="mediachannels[]" class="hide form-control" value="{{ Request::old('')}}" multiple>
           <optgroup value="Facebook Instagram Twitter Vine" label="All Channels">
             <option value="Facebook"> Facebook </option>
             <option value="Instagram"> Instagram </option>
@@ -65,10 +65,10 @@
 
         <label class="block" for="resultsorder"> Select Results Ordering </label>
 
-        <select id="resultsorder" name="resultsorder" class="form-control" value="{{ Request::old('resultsorder')}}">  
-          <option > Latest </option>
-          <option > Reverse </option>
-          <option > Random </option>
+        <select id="resultsorder" name="resultsorder" class="form-control" value="{{ Request::old('')}}">  
+          <option > Recent </option>
+          <option > Popular </option>
+          <option > Mixed </option>
         </select>
 
       </div>
@@ -87,30 +87,35 @@
   </div>
 
   <script>
+  
+    $(document).ready(function() {
 
-    $('#mediachannels').multiselect({
-      enableClickableOptGroups: true
+      $('#mediachannels').multiselect({
+        enableClickableOptGroups: true
+      });
+
+      $('#targetaccounts').tagsInput({
+        'defaultText': 'Optional.',
+        'placeholderColor' : '#333333',
+        'height': 'auto',
+        'width': '100%'
+      });
+
+      $('#searchcriteria').tagsInput({
+        'defaultText': '#...',
+        'placeholderColor' : '#333333',
+        'height': 'auto',
+        'width': '100%'
+      });
+
+      $('#keywordfilter').tagsInput({
+        'defaultText': 'Optional.',
+        'placeholderColor' : '#333333',
+        'height': 'auto',
+        'width': '100%'
+      });
     });
 
-    $('#targetaccounts').tagsInput({
-      'defaultText': 'Optional.',
-      'placeholderColor' : '#333333',
-      'height': 'auto',
-      'width': '100%'
-    });
-
-    $('#searchcriteria').tagsInput({
-      'defaultText': '#...',
-      'placeholderColor' : '#333333',
-      'height': 'auto',
-      'width': '100%'
-    });
-
-    $('#keywordfilter').tagsInput({
-      'defaultText': 'Optional.',
-      'placeholderColor' : '#333333',
-      'height': 'auto',
-      'width': '100%'
-    });
   </script>
+
 @endsection

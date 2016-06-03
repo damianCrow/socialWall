@@ -5749,6 +5749,32 @@ button.close {
   .hidden-print {
     display: none !important; } }
 
+@font-face {
+  font-family: 'icomoon';
+  src: url("../fonts/icomoon/icomoon.eot?mp7mvf");
+  src: url("../fonts/icomoon/icomoon.eot?mp7mvf#iefix") format("embedded-opentype"), url("../fonts/icomoon/icomoon.ttf?mp7mvf") format("truetype"), url("../fonts/icomoon/icomoon.woff?mp7mvf") format("woff"), url("../fonts/icomoon/icomoon.svg?mp7mvf#icomoon") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-cross:before {
+  content: "\e900"; }
+
+.icon-checkmark:before {
+  content: "\e901"; }
+
 #admin {
   margin-left: 10px;
   vertical-align: baseline;
@@ -5765,5 +5791,34 @@ button.close {
 
 .block {
   display: block; }
+
+.btn.disabled {
+  pointer-events: none; }
+
+.channel-logo {
+  width: 40px;
+  max-width: 50px; }
+
+.channel-logo-wrapper {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  right: 0; }
+
+.post-header {
+  position: relative; }
+
+.icon {
+  height: 16px;
+  width: 16px;
+  padding: 0 15px 0 0; }
+  .icon-close {
+    color: #f0ad4e; }
+    .icon-close:hover {
+      color: #d9534f; }
+  .icon-tick {
+    color: #5bc0de; }
+    .icon-tick:hover {
+      color: #32BD32; }
 
 /*# sourceMappingURL=app.css.map */

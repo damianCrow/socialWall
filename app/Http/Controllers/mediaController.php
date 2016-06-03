@@ -27,17 +27,17 @@ class mediaController extends Controller  {
 
 		$responseObj = (json_decode($response->getBody()));
 
-// 		if (isset($responseObj -> search_metadata -> next_results)) {
+		if (isset($responseObj -> search_metadata -> next_results)) {
 
-// 			$this -> twitterMedia($responseObj -> search_metadata -> next_results);
-// echo $responseObj -> search_metadata -> next_results;
-// 			return View::make('test')
-// 	     	->with('responseObj', $responseObj);
-// 		}
-		// else {
-// echo $responseObj -> search_metadata -> next_results;
+			$this -> twitterMedia($responseObj -> search_metadata -> next_results);
+echo $responseObj -> search_metadata -> next_results;
 			return View::make('test')
 	     	->with('responseObj', $responseObj);
-		// }
+		}
+		else {
+echo $responseObj -> search_metadata -> next_results;
+			return View::make('test')
+	     	->with('responseObj', $responseObj);
+		}
 	}
 }

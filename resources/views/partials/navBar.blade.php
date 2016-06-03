@@ -21,8 +21,8 @@
             </a>
             <ul class="dropdown-menu">
               <li><a tabindex="-1" href="{{ URL::to('socialWall/create') }}"> Create New socialWall </a></li>
-              <li><a tabindex="-1" href="#"> Edit Existing socialWall </a></li>
-              <li><a tabindex="-1" href="#"> Run socialWall </a></li>
+              <!-- <li><a tabindex="-1" href="#"> Run socialWall </a></li> -->
+              <li><a tabindex="-1" href="{{ URL::to('socialWall') }}"> Run, Edit Or Delete socialWall </a></li>
             </ul>
           </li>
           <li>

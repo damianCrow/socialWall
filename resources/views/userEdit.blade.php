@@ -2,43 +2,50 @@
 
 @section('content')
 
-	<h1>Edit Your Account</h1>
+  <div class="col-md-6 col-md-offset-3">
 
-	</br>
+  	<h1>Edit Your Account</h1>
 
-	@if($errors->has())
-		<ul>
-	   	@foreach ($errors->all() as $error)
-	      <li>{{ $error }}</li>
-	  	@endforeach
-	  </ul>
-	@endif
+  	</br>
 
-	{{ Form::model($user, array('route' => array('user.update', $user->id), 'method' => 'PUT')) }}
+  	@if($errors->has())
+  		<ul>
+  	   	@foreach ($errors->all() as $error)
+  	      <li>{{ $error }}</li>
+  	  	@endforeach
+  	  </ul>
+  	@endif
 
-	 <div class="form-group {{ $errors -> has('username') ? 'has-error' : ''}}">
-      <label for="username"> Enter Username </label>
-      <input id="username" class="form-control" type="text" name="username" value="{{ $user['username'] }}">
-    </div>
+  	{{ Form::model($user, array('route' => array('user.update', $user->id), 'method' => 'PUT')) }}
 
-    <div class="form-group {{ $errors -> has('email') ? 'has-error' : ''}}">
-      <label for="email"> Enter Email </label>
-      <input id="email" class="form-control" type="text" name="email" value="{{ $user['email'] }}">
-    </div>
+  	 <div class="form-group {{ $errors -> has('username') ? 'has-error' : ''}}">
+        <label for="username"> Enter Username </label>
+        <input id="username" class="form-control" type="text" name="username" value="{{ $user['username'] }}">
+      </div>
 
-    <div class="form-group {{ $errors -> has('password') ? 'has-error' : ''}}">
-      <label for="password"> Enter Password </label>
-      <input id="password" class="form-control" type="password" name="password" value="{{ $user['password']}}">
-    </div>
+      <div class="form-group {{ $errors -> has('email') ? 'has-error' : ''}}">
+        <label for="email"> Enter Email </label>
+        <input id="email" class="form-control" type="text" name="email" value="{{ $user['email'] }}">
+      </div>
 
-    <div class="form-group">
-      <label for="admin"> Make Admin User </label>
-      
-      <input @if (!Auth::user()->isAdmin()) disabled readonly @endif class="checkbox-inline" id="admin" type="checkbox" name="admin" @if($user['admin']== 1) checked @endif> 
-    </div>
+      <div class="form-group {{ $errors -> has('password') ? 'has-error' : ''}}">
+        <label for="password"> Enter Password </label>
+        <input id="password" class="form-control" type="password" name="password" value="{{ $user['password']}}">
+      </div>
 
-		{{ Form::submit('Submit', array('class' => 'btn btn-primary')) }}
+      <div class="form-group">
 
-	{{ Form::close() }}
+        @if (Auth::user()->isAdmin())
+          <label for="admin"> Make Admin User </label>
+          <input class="checkbox-inline" id="admin" type="checkbox" name="admin" @if($user['admin']== 1) checked @endif> 
+        @endif 
+
+      </div>
+
+  		{{ Form::submit('Submit', array('class' => 'btn btn-primary')) }}
+
+  	{{ Form::close() }}
+
+  </div>
 
 @endsection

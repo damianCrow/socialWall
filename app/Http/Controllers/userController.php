@@ -154,7 +154,7 @@
     public function destroy($id) {
 
     	$user = User::find($id);
-      $user->delete();
+      $user -> delete();
 
       Session::flash('message', 'You have successfully deleted this user!');
 
