@@ -4,7 +4,7 @@ namespace socialwall;
 
 use Illuminate\Database\Eloquent\Model;
 
-class getMedia extends Model
+class twitterPosts extends Model
 {
     //
 }
