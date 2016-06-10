@@ -78,6 +78,33 @@
 	position: relative;
 }
 
+a.approval, a.approval:hover, a.approval:active, a.approval:visited {
+	text-decoration: none;
+	outline: none;
+	color: transparent;
+}
+
+.panel-body.disapproved {
+
+	&:before {
+		content: "DISAPPROVED";
+		font-size: 1.5em;
+    color: #d9534f;
+    position: absolute;
+    top: 25px;
+    left: 15px;
+	}
+}
+
+.panel-body.approved {
+	
+	&:after {
+		@extend .panel-body.disapproved:before;
+		content: "APPROVED";
+    color: #32BD32;
+	}
+}
+
 .icon {
 	height: 16px;
 	width: 16px;

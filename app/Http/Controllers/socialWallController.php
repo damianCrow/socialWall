@@ -23,9 +23,7 @@ class socialWallController extends Controller {
     $this->middleware('auth');
   }
 
-	public $count = 0;
 	public $responseArray = [];
-	public $nextUrls = [];
 
   public function index() {
      
@@ -160,7 +158,19 @@ class socialWallController extends Controller {
 
 				$this -> makeRequest($query);
 			}
+echo 'before ' . Count($this->responseArray) . ' Tweets';
+			$reTweet = 'RT';
 
+			foreach ($this->responseArray as $key => $value) {
+
+				$test = strpos($value->text, $reTweet);
+
+				if($test !== false) {
+
+					 unset($this->responseArray[$key]);
+				}
+			}
+echo ' after ' . Count($this->responseArray) . ' Tweets';
 			$this->savePosts($this->responseArray, $id);
 		
 	    $data = twitterPosts::where('socialwall_id', '=', $id)->paginate(15);
@@ -212,13 +222,12 @@ class socialWallController extends Controller {
 
 		if(isset($responseObj -> search_metadata -> next_results)) {
 
-				array_push($this->nextUrls, $responseObj -> search_metadata -> next_results);
-
 			foreach ($responseObj -> statuses as $value) {
+
 				array_push($this->responseArray, $value);
 			}
 
-			$this -> makeRequest('search/tweets.json?q=' . $responseObj -> search_metadata -> next_results);
+			$this -> makeRequest('search/tweets.json' . $responseObj -> search_metadata -> next_results);
 		}
 		else {
 

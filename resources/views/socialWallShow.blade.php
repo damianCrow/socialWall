@@ -6,7 +6,7 @@
 
 	@foreach($data as $tweet)
 
-		<div class="panel panel-primary col-lg-3 col-md-4">
+		<div class="panel panel-info col-lg-3 col-md-4">
 		  <div class="post-header panel-heading">{{ $tweet -> post_username }}
 
 		  <div class="channel-logo-wrapper pull-right">
@@ -23,7 +23,8 @@
 		  </div>
 
 		  </div>
-		  <div class="panel-body">{{ $tweet -> post_text }}</div>
+
+		  <div class="@if($tweet -> approved === "1") approved @elseif($tweet -> approved === "0") disapproved @endif panel-body">{{ $tweet -> post_text }}</div>
 
 		  @if($tweet -> post_media != '')
 
@@ -40,16 +41,19 @@
 
 	    evt.preventDefault();
 
+	    if ($(this).attr('href') === '/approve') {
+
+	    	$(this).parents().eq(2).find('.panel-body').removeClass('disapproved').toggleClass('approved');
+	    }
+	    if ($(this).attr('href') === '/disapprove') {
+
+	    	$(this).parents().eq(2).find('.panel-body').removeClass('approved').toggleClass('disapproved');
+	    }
+
 	    $.ajax({
 	        method: 'GET',
 	        url: $(this).attr('href'),
-	        data: {id:$(this).attr('value')},
-	        success: function(response) {
-	console.log(response);
-	        },
-	        error: function(response) {
-	console.log(response);
-	        }
+	        data: {id:$(this).attr('value')}
 	    });
 		})
 
