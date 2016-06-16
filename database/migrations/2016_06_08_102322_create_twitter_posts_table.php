@@ -17,7 +17,7 @@ class CreateTwitterPostsTable extends Migration
             $table->integer('socialwall_id');
             $table->string('post_id');
             $table->string('post_username');
-            $table->char('post_text');
+            $table->longText('post_text');
             $table->string('post_media');
             $table->string('approved');
             $table->timestamps();

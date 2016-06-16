@@ -54,13 +54,5 @@
 
   @endforeach
 
-  <script>
-
-    $(".delete").on("submit", function() {
-
-       return confirm("Are you sure you want to delete this socialWall?");
-    });
-
-	</script>
 @endsection
 

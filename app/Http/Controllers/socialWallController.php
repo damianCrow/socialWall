@@ -60,7 +60,7 @@ class socialWallController extends Controller {
 		$this -> validate($request, [
 			'name' => 'required|unique:social_walls|min:4',
 			'mediachannels' => 'required',
-			'searchcriteria' => 'required',
+			'searchcriteria' => 'required_if:targetaccounts,""',
 		]);
 
 		$name = $request['name'];
@@ -96,7 +96,7 @@ class socialWallController extends Controller {
 			$data = twitterPosts::where('socialwall_id', '=', $id)->paginate(15);
 	    
 			return View::make('socialWallShow')
-	   		->with('data', $data);
+	   		->with(['data' => $data, 'socialWallId' => $id]);
 		}
 		else {
 
@@ -107,7 +107,16 @@ class socialWallController extends Controller {
 
 	   	$contentOrdering = '&result_type=' . strtolower(str_replace(' ', '', $socialWall['results_order']));
 
-			$hashtags = urlencode(str_replace($oldCharacters, $newCharacters, $socialWall['search_hashtags']));
+	   	if ($socialWall['search_hashtags']) {
+
+	   		$hashtagsArray = explode(',', $socialWall['search_hashtags']);
+
+	   		$hashtags = urlencode(str_replace($oldCharacters, $newCharacters, $socialWall['search_hashtags']));
+	   	}
+	   	else {
+
+				$hashtags = '';
+			}
 
 			if ($socialWall['filter_keywords']) {
 
@@ -122,32 +131,38 @@ class socialWallController extends Controller {
 
 			if ($socialWall['target_accounts']) {
 
-				$hashtagsArray = explode(',', $socialWall['search_hashtags']);
-
 				$accountsArray = explode(',', $socialWall['target_accounts']);
 
 				foreach ($accountsArray as $account) {
 
-					$query = 'statuses/user_timeline.json?screen_name=' . $account . '&count=200';
+					$query = 'statuses/user_timeline.json?screen_name=' . $account . '&include_rts=false' . '&count=200';
 
 					foreach ($this -> makeRequest($query) as $post) {
-						
-						foreach ($hashtagsArray as $hashtag) {
 
-							if(strpos($post->text, $hashtag)) {
+						if(isset($hashtagsArray)) {
 
-								array_push($this->responseArray, $post);
-							}
-							else {
+							foreach ($hashtagsArray as $hashtag) {
 
-								foreach ($keywordsArray as $keyword) {
+								if(strpos($post->text, $hashtag)) {
 
-									if(strpos($post->text, $keyword)) {
-
-										array_push($this->responseArray, $post);
-									}
+									array_push($this->responseArray, $post);
 								}
 							}
+						}
+						if(isset($keywordsArray)) {
+
+							foreach ($keywordsArray as $keyword) {
+
+								if(strpos($post->text, $keyword)) {
+
+									array_push($this->responseArray, $post);
+								}
+							}
+						}
+
+						if(!isset($keywordsArray) && !isset($hashtagsArray)) {
+							
+							array_push($this->responseArray, $post);
 						}
 					}
 				}
@@ -158,25 +173,26 @@ class socialWallController extends Controller {
 
 				$this -> makeRequest($query);
 			}
+			echo $query;
 echo 'before ' . Count($this->responseArray) . ' Tweets';
-			$reTweet = 'RT';
+// 			$reTweet = 'RT';
 
-			foreach ($this->responseArray as $key => $value) {
+// 			foreach ($this->responseArray as $key => $value) {
 
-				$test = strpos($value->text, $reTweet);
+// 				$test = strpos($value->text, $reTweet);
 
-				if($test !== false) {
+// 				if($test !== false) {
 
-					 unset($this->responseArray[$key]);
-				}
-			}
-echo ' after ' . Count($this->responseArray) . ' Tweets';
+// 					 unset($this->responseArray[$key]);
+// 				}
+// 			}
+// echo ' after ' . Count($this->responseArray) . ' Tweets';
 			$this->savePosts($this->responseArray, $id);
 		
 	    $data = twitterPosts::where('socialwall_id', '=', $id)->paginate(15);
 	    
 			return View::make('socialWallShow')
-	   		->with('data', $data);
+	   		->with(['data' => $data, 'socialWallId' => $id]);
 		}
   }
 
@@ -261,7 +277,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 		$rules = [
 			'name' => 'required|min:4',
 			'mediachannels' => 'required',
-			'searchcriteria' => 'required',
+			'searchcriteria' => 'required_if:targetaccounts,""',
 		];
             
     $validator = Validator::make($request, $rules);
@@ -330,5 +346,19 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
     Session::flash('message', 'You have successfully deleted this socialWall!');
 
     return redirect() -> route('dashboard');
+  }
+
+  public function socialWallRun($id) {
+
+  	$data = twitterPosts::where('socialwall_id', '=', $id) 
+  		-> where('approved', '=', '1') -> get();
+
+  	if(count($data) < 1) {
+
+  		return json_encode("You have not approved any posts for this socialWall!");
+  	}
+  	else {
+  		return json_encode($data);
+  	}
   }
 }

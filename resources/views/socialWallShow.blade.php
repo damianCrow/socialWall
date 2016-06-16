@@ -2,7 +2,14 @@
 
 @section('content')
 
-	<h3>{!! $data->render() !!}</h3>
+	<h3 class="cta-wrapper"> 
+
+		{!! $data->render() !!} 
+
+		<button class="btn btn-lg btn-success header-btn-right" onclick="getSocialWallRunData('{{ URL::to('run/socialWall/' . $socialWallId) }}')">Run socialWall</button>
+
+	</h3>
+	
 
 	@foreach($data as $tweet)
 
@@ -34,29 +41,5 @@
 		</div>
 
 	@endforeach
-
-	<script type="text/javascript">
-	
-		$('.approval').click(function(evt) {
-
-	    evt.preventDefault();
-
-	    if ($(this).attr('href') === '/approve') {
-
-	    	$(this).parents().eq(2).find('.panel-body').removeClass('disapproved').toggleClass('approved');
-	    }
-	    if ($(this).attr('href') === '/disapprove') {
-
-	    	$(this).parents().eq(2).find('.panel-body').removeClass('approved').toggleClass('disapproved');
-	    }
-
-	    $.ajax({
-	        method: 'GET',
-	        url: $(this).attr('href'),
-	        data: {id:$(this).attr('value')}
-	    });
-		})
-
-</script>
 
 @endsection

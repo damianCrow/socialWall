@@ -25,14 +25,16 @@ Route::group(['middleware' => ['web']], function () {
 
   Route::resource('socialWall', 'socialWallController');
 
-  Route::get('/test', [
-    'uses' => 'mediaController@twitterMedia',
-    'as' => 'test'
-  ]);
-
   Route::get('/disapprove', 'socialWallController@disApprovePost');
   
   Route::get('/approve', 'socialWallController@approvePost');
+
+  Route::get('/run/socialWall/{socialwallId}', 'socialWallController@socialWallRun');
+
+  Route::get('/test', function() {
+    return view('test');
+  });
+
 });
 
 ?>

@@ -1,5 +1,8 @@
 var elixir = require('laravel-elixir');
 
+require( 'elixir-jshint' );
+ 
+
 /*
  |--------------------------------------------------------------------------
  | Elixir Asset Management
@@ -14,5 +17,9 @@ var elixir = require('laravel-elixir');
 elixir(function(mix) {
     mix.sass('app.scss')
         .version(["public/css/app.css"]);
+});
+
+elixir( function( mix ) {
+    mix.jshint( ['public/javaScript/*.js', '!js/vendor/*.js'] );
 });
 

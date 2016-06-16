@@ -89,73 +89,44 @@
 
   <script>
 
-    $(document).ready(function() {
+    for (var i = 0; i < $('#resultsorder')[0].length; i++) {
+      
+      if($('#resultsorder')[0][i].text == '{{ $socialWall['results_order'] }}') {
 
-      for (var i = 0; i < $('#resultsorder')[0].length; i++) {
-        
-        if($('#resultsorder')[0][i].text == '{{ $socialWall['results_order'] }}') {
+        if (i != 0) {
 
-          if (i != 0) {
-
-            $('#resultsorder')[0][i].remove();
-          }
+          $('#resultsorder')[0][i].remove();
         }
       }
-
-      $('#mediachannels').multiselect({
-        enableClickableOptGroups: true,
-      });
-        
-      @if($media_channels != null)
-        @foreach ($media_channels as $channel)
-        
-          $('#mediachannels').multiselect('select', ['{{$channel}}']);
-        @endforeach
-      @endif
-
-      $('#targetaccounts').tagsInput({
-        'defaultText': 'Account',
-        'placeholderColor' : '#333333',
-        'height': 'auto',
-        'width': '100%'
-      });
-
-      @if($target_accounts != null)
-        @foreach ($target_accounts as $account)
-
-          $('#targetaccounts').addTag('{{ $account }}');
-        @endforeach
-      @endif
-
-      $('#searchcriteria').tagsInput({
-        'defaultText': 'Add #tag',
-        'placeholderColor' : '#333333',
-        'height': 'auto',
-        'width': '100%'
-      });
-
-      @if($hashtags != null)
-        @foreach ($hashtags as $hashtag)
-
-          $('#searchcriteria').addTag('{{ $hashtag }}');
-        @endforeach
-      @endif
-
-      $('#keywordfilter').tagsInput({
-        'defaultText': 'Keyword',
-        'placeholderColor' : '#333333',
-        'height': 'auto',
-        'width': '100%'
-      });
-
-      @if($filter_keywords != null)
-        @foreach ($filter_keywords as $keyword)
-
-          $('#keywordfilter').addTag('{{ $keyword }}');
-        @endforeach
-      @endif
+    }
       
-    });
+    @if($media_channels != null)
+      @foreach ($media_channels as $channel)
+      
+        $('#mediachannels').multiselect('select', ['{{$channel}}']);
+      @endforeach
+    @endif
+
+    @if($target_accounts != null)
+      @foreach ($target_accounts as $account)
+
+        $('#targetaccounts').addTag('{{ $account }}');
+      @endforeach
+    @endif
+
+    @if($hashtags != null)
+      @foreach ($hashtags as $hashtag)
+
+        $('#searchcriteria').addTag('{{ $hashtag }}');
+      @endforeach
+    @endif
+
+    @if($filter_keywords != null)
+      @foreach ($filter_keywords as $keyword)
+
+        $('#keywordfilter').addTag('{{ $keyword }}');
+      @endforeach
+    @endif
 
   </script>
 

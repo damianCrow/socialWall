@@ -5775,6 +5775,18 @@ button.close {
 .icon-checkmark:before {
   content: "\e901"; }
 
+.icon-previous2:before {
+  content: "\e902"; }
+
+.icon-next2:before {
+  content: "\e903"; }
+
+.icon-arrow-right:before {
+  content: "\e904"; }
+
+.icon-arrow-left:before {
+  content: "\e905"; }
+
 #admin {
   margin-left: 10px;
   vertical-align: baseline;
@@ -5825,6 +5837,15 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   content: "APPROVED";
   color: #32BD32; }
 
+.cta-wrapper {
+  min-height: 70px; }
+
+.header-btn-right {
+  position: absolute;
+  right: 15px;
+  margin: 20px 0;
+  display: inline-block; }
+
 .icon {
   height: 16px;
   width: 16px;
@@ -5837,5 +5858,60 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
     color: #5bc0de; }
     .icon-tick:hover {
       color: #32BD32; }
+
+.post-container {
+  position: relative;
+  background-color: #5bc0de; }
+
+#previous-post, #next-post {
+  font-size: 30px;
+  color: #fff;
+  position: absolute;
+  top: 49%; }
+
+#previous-post {
+  left: 2.5%; }
+
+#next-post {
+  right: 2.5%; }
+
+.post-wrapper {
+  max-width: 90%;
+  max-height: 90%;
+  top: 50%;
+  left: 50%;
+  position: relative;
+  opacity: 0;
+  border-radius: 3%;
+  border: 1px solid #337ab7; }
+
+.post-author {
+  text-align: center;
+  margin-bottom: 3%;
+  font-family: Verdana, Geneva, sans-serif;
+  text-shadow: 0.5px #333;
+  color: #fff; }
+
+.post-image-wrapper {
+  height: 70%;
+  width: 80%;
+  position: relative;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  text-align: center; }
+
+.post-image {
+  border: 1px solid #337ab7;
+  border-radius: 3%; }
+
+.post-text {
+  position: relative;
+  margin-top: 3%;
+  font-size: 150%;
+  font-family: Verdana, Geneva, sans-serif;
+  text-align: center;
+  text-shadow: 0.5px #333;
+  color: #fff; }
 
 /*# sourceMappingURL=app.css.map */

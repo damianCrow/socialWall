@@ -30,7 +30,7 @@
 
       <div class="form-group {{ $errors -> has('password') ? 'has-error' : ''}}">
         <label for="password"> Enter Password </label>
-        <input id="password" class="form-control" type="password" name="password" value="{{ $user['password']}}">
+        <input id="password" class="form-control" type="password" name="password" value="">
       </div>
 
       <div class="form-group">
