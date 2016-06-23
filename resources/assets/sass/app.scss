@@ -45,7 +45,14 @@
     content: "\e905";
 }
 
-#admin {
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#admin, #private {
 	margin-left: 10px;
 	vertical-align: baseline;
   font-size: 16px;
@@ -153,21 +160,27 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 .post-container {
 	position: relative;
 	background-color: #5bc0de;
+
+	.channel-logo {
+		position: absolute;
+		left: 49%;
+		top: 2%;
+	}
 }
 
 #previous-post, #next-post {
-	font-size: 30px;
+	font-size: 250%;
 	color: #fff;
 	position: absolute;
 	top: 49%;
 }
 
 #previous-post {
-	left: 2.5%;
+	left: 2%;
 }
 
 #next-post {
-	right: 2.5%;
+	right: 2%;
 }
 
 .post-wrapper {
@@ -198,6 +211,11 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 .post-image {
 	border: 1px solid #337ab7;
 	border-radius: 3%;
+
+	&-custom {
+		max-width: 100%;
+		width: 100%;
+	}
 }
 .post-text {
 	position: relative;
@@ -207,4 +225,117 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 	text-align: center;
 	text-shadow: 0.5px #333;
 	color: #fff;
+}
+
+.grid-item {
+	margin: 0.1% 0.1% 0 0;
+	float: left;
+}
+
+@media screen and (min-width: 1391px) {
+
+	.grid-item {
+		width: 24.2%;
+	}
+
+	.tile, .tile-wrapper {
+		width: 20%;
+	}
+}
+
+@media screen and (max-width: 1390px) {
+
+	.grid-item {
+		width: 32%;
+	}
+
+	.tile, .tile-wrapper {
+		width: 25%;
+	}
+}
+
+@media screen and (max-width: 900px) {
+
+	.grid-item {
+		width: 47.8%;
+	}
+
+	#previous-post, #next-post {
+		display: none;
+	}
+
+	.big-tile {
+		width: 100% !important;
+		left: 0 !important;
+	}
+
+	.tile, .tile-wrapper {
+		width: 33.333334%;
+	}
+	// .header-btn-right {
+	// 	position: inherit;
+	// 	clear: both;
+	// }
+}
+
+@media screen and (max-width: 735px) {
+
+	.grid-item {
+		width: 99%;
+	}
+
+	.tile, .tile-wrapper {
+		width: 50%;
+	}
+}
+
+// .item-test {
+// 	width: 20%;
+// 	height: 20%;
+// 	background-color: yellow;
+// 	border: 1px solid #000;
+// 	float: left;
+
+// 	&-two {
+// 		@extend .item-test;
+// 		width: 40%;
+// 		height: 30%;
+// 	}
+// 	&-three {
+// 		@extend .item-test;
+// 		width: 60%;
+// 		height: 40%;
+// 	}
+// }
+
+.tile-wrapper {
+	float: left;
+}
+
+.tile {
+	transition: all 1s ease-out;
+	float: left;
+	border: 0.5px solid #337ab7;
+	background-repeat: no-repeat;
+	background-size: 100% auto;
+	background-color: #262626;
+	background-position: 50% 50%;
+	position: absolute;
+	
+	.post-details {
+		display: none;
+	}
+}
+
+.big-tile {
+	@extend .tile;
+	top: 0;
+	width: 60%;
+	left: 20%;
+
+	.post-details {
+		display: inline-block;
+		background-color: #262626;
+		width: 100%;
+	}
 }

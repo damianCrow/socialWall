@@ -1,19 +1,22 @@
 @extends('layouts.master')
 
+@section('header')
+
+<h3 class="cta-wrapper col-lg-12"> 
+
+	{!! $data->render() !!} 
+
+	<button id="socialWallRunButton" value="run/{{$socialWallId}}" class="btn btn-lg btn-success header-btn-right col-lg-2" onclick="getSocialWallRunData('{{ URL::to('run/socialWall/' . $socialWallId) }}')">Run socialWall</button>
+
+</h3>
+
+@endsection
+
 @section('content')
-
-	<h3 class="cta-wrapper"> 
-
-		{!! $data->render() !!} 
-
-		<button class="btn btn-lg btn-success header-btn-right" onclick="getSocialWallRunData('{{ URL::to('run/socialWall/' . $socialWallId) }}')">Run socialWall</button>
-
-	</h3>
 	
-
 	@foreach($data as $tweet)
 
-		<div class="panel panel-info col-lg-3 col-md-4">
+		<div class="grid-item panel panel-info col-lg-3">
 		  <div class="post-header panel-heading">{{ $tweet -> post_username }}
 
 		  <div class="channel-logo-wrapper pull-right">
@@ -35,7 +38,7 @@
 
 		  @if($tweet -> post_media != '')
 
-		  	<img class="col-lg-12 col-md-12" src="{{ $tweet -> post_media }}">
+		  	<img class="post-image-custom" src="{{ $tweet -> post_media }}">
 		  @endif
 
 		</div>

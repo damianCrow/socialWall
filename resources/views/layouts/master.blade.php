@@ -12,6 +12,7 @@
       <script type="text/javascript" src="http://davidstutz.github.io/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.6/jquery.tagsinput.min.js">
       </script>
+      <script type="text/javascript" src="https://npmcdn.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
       <script type="text/javascript" src="{{ URL::asset('javaScript/app.js') }}"></script>
   </head>
   <body>
@@ -33,9 +34,16 @@
           </div>
         @endif
 
+        @yield('header')
+      </div>
+
+      <div class="grid row-fluid col-md-10 col-md-offset-1">
+
         @yield('content')
 
       </div>
     </div>
+
+    @yield('scripts')
   </body>
 </html>

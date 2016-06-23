@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('content')
+@section('header')
 
   @if(count($errors) > 0) 
     <div class="row">
@@ -12,7 +12,11 @@
         </ul>
       </div>
     </div>
-  @endif 
+  @endif
+
+@endsection
+
+@section('content')
 
   <div class="col-md-12 col-md-offset-1 form-inline">
 

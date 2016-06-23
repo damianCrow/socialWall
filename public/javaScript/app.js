@@ -2,6 +2,22 @@
 
 $(document).ready(function() {
 
+	$(window).on('load', function(){
+
+		$('.grid').isotope({
+		  itemSelector: '.grid-item',
+		  packery: {
+		  	stamp: '.stamp',
+		  	percentPosition: true
+		  }
+		});
+	});
+
+	$(window).on('hashchange', function(){
+
+    $('.grid').isotope();
+	});
+
 	$('.approval').click(function(evt) {
 
 	  evt.preventDefault();
@@ -58,7 +74,7 @@ $(document).ready(function() {
 // SOCIALWALL RUN CODE \\
 
 var content = [];
-var i = 0;
+var data = [];
 
 function getSocialWallRunData(url) {
 
@@ -75,7 +91,7 @@ function getSocialWallRunData(url) {
     	}
     	else {
 
-    		var data = JSON.parse(response);
+    		data = JSON.parse(response);
     		data.forEach(createPost);
     	}
     },
@@ -88,7 +104,7 @@ function getSocialWallRunData(url) {
 
 function createPost(post, index, arr) {
 
-	var element = '<div class="post-container"><span id="previous-post" class="icon-previous2"></span><span id="next-post" class="icon-next2"></span><div class="post-wrapper">' +
+	var element = '<div class="post-container"><img class="channel-logo"><span id="previous-post" class="icon-previous2"></span><span id="next-post" class="icon-next2"></span><div class="post-wrapper">' +
 
 	'<h2 class="post-author">' + post.post_username +'</h2>';
 
@@ -99,77 +115,17 @@ function createPost(post, index, arr) {
 
 	element += '<p class="post-text">' + post.post_text + '</p>' +
 	
-	'</div></div>';
+	'</div></div>' + '';
 
 	content.push(element);
 
 	if(index === arr.length - 1) {
 
-		postTransition(i);
+		createView();
 	}
 }
 
-function postTransition(i) {
+function createView() {
 
-	$('body').html(content[i]);
-	$('.post-wrapper').fadeTo(1300, 1);
-	$('.post-container').css({
-		'height': window.innerHeight
-	});
-	$('.post-wrapper').css({
-		'transform': 'translateY(-50%) translateX(-50%)'
-	});
-	$('.post-image').css({
-		'max-height': window.innerHeight / 10 * 6,
-		'max-width': '100%'
-	});
-
-	var fadeOut = setTimeout(function() {
-		$('.post-wrapper').fadeTo(1000, 0);
-	}, 9000);
-
-	var showNextPost = 	setTimeout(function() {
-
-		if(i === content.length - 1) {
-
-			i = 0;
-			postTransition(i);
-		}
-		else {
-
-			postTransition(i + 1);
-		}
-	}, 10000);
-
-	$('#previous-post').click(function() {
-
-		clearTimeout(showNextPost);
-		clearTimeout(fadeOut);
-
-		if(i === 0) {
-
-			i = content.length - 1;
-			postTransition(i);
-		}
-		else {
-
-			postTransition(i - 1);
-		}
-	});
-
-	$('#next-post').click(function() {
-
-		clearTimeout(showNextPost);
-		clearTimeout(fadeOut);
-
-		if(i < content.length - 1) {
-
-			postTransition(i + 1);
-		}
-		else {
-
-			i = 0;
-			postTransition(i);
-		}
-	});
+	var newView = window.open($('#socialWallRunButton').val(), '', 'height='+screen.height +', width='+screen.availWidth+ ', scrollbars=no', true);
 }

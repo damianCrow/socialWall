@@ -23,6 +23,8 @@ Route::group(['middleware' => ['web']], function () {
 
   Route::resource('user', 'userController');
 
+  Route::resource('theme', 'themeController');
+
   Route::resource('socialWall', 'socialWallController');
 
   Route::get('/disapprove', 'socialWallController@disApprovePost');
@@ -31,8 +33,9 @@ Route::group(['middleware' => ['web']], function () {
 
   Route::get('/run/socialWall/{socialwallId}', 'socialWallController@socialWallRun');
 
-  Route::get('/test', function() {
-    return view('test');
+  Route::get('/socialWall/run/{socialwallId}', function() {
+
+    return view('runView');
   });
 
 });

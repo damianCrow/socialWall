@@ -93,7 +93,7 @@ class socialWallController extends Controller {
 
 		if(Input::get('page') || twitterPosts::where('socialwall_id', '=', $id)->exists()) {
 			
-			$data = twitterPosts::where('socialwall_id', '=', $id)->paginate(15);
+			$data = twitterPosts::where('socialwall_id', '=', $id)->paginate(25);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
@@ -189,7 +189,7 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
 // echo ' after ' . Count($this->responseArray) . ' Tweets';
 			$this->savePosts($this->responseArray, $id);
 		
-	    $data = twitterPosts::where('socialwall_id', '=', $id)->paginate(15);
+	    $data = twitterPosts::where('socialwall_id', '=', $id)->paginate(25);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
