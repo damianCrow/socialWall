@@ -42,7 +42,7 @@
 
           {{ Form::open(array('url' => '/', 'class' => 'delete side-by-side')) }}
               {{ Form::hidden('_method', 'GET') }}
-              {{ Form::submit('Delete This socialWall', array('class' => 'btn btn-sm disabled btn-default')) }}
+              {{ Form::submit('Delete socialWall', array('class' => 'btn btn-sm disabled btn-default')) }}
           {{ Form::close() }}
           
         </li>

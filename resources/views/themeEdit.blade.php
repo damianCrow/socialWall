@@ -20,13 +20,13 @@
 
   <div class="col-md-12 col-md-offset-1 form-inline">
 
-    <h2 class="vertical-spacer"> Create New Theme </h2>
-  
-    {{ Form::open(array('url' => 'theme/', 'method' => 'POST', 'files' => true)) }}
+    <h2 class="vertical-spacer"> Edit Theme </h2>
 
+    {{ Form::model($theme, array('route' => array('theme.update', $theme->id), 'method' => 'PUT')) }}
+  
       <div class="input-group vertical-spacer col-lg-3 col-sm-6 {{ $errors -> has('name') ? 'has-error' : ''}}">
         <label for="name"> Enter Theme Name </label>
-        <input id="name" class="form-control" type="text" name="name">
+        <input id="name" class="form-control" type="text" name="name" value="{{ $theme['name'] }}">
       </div>
 
       <div class="input-group col-lg-offset-1 col-lg-3 col-sm-6 vertical-spacer {{ $errors -> has('view') ? 'has-error' : ''}}">
@@ -34,9 +34,9 @@
         <label class="block" for="view"> Select View </label>
 
         <select id="view" name="view" class="form-control">  
-          <option > Default View </option>
-          <option > Tile View </option>
-          <option > Gallery View </option>
+          <option @if($theme['view'] === 'Default View') selected @endif> Default View </option>
+          <option @if($theme['view'] === 'Tile View') selected @endif> Tile View </option>
+          <option @if($theme['view'] === 'Gallery View') selected @endif> Gallery View </option>
         </select>
 
       </div>
@@ -44,37 +44,45 @@
       <div class="input-group vertical-spacer col-lg-3 col-sm-6 col-lg-offset-1 {{ $errors -> has('backgroundimage') ? 'has-error' : ''}}">
         <label for="backgroundimage"> Upload Background Image (5000kb max)</label>
         <input id="backgroundimage" class="form-control" type="file" accept="image/*" name="backgroundimage">
+
       </div>
 
       <div class="input-group vertical-spacer col-lg-3 col-sm-6 {{ $errors -> has('bordercolor') ? 'has-error' : ''}}">
         <label for="bordercolor"> Select Border Color </label>
-        <input id="bordercolor" class="form-control" type="color" name="bordercolor">
+        <input id="bordercolor" class="form-control" type="color" name="bordercolor" value="{{ $theme['border_color'] }}">
       </div>
 
       <div class="input-group vertical-spacer col-lg-3 col-sm-6 col-lg-offset-1 {{ $errors -> has('backgroundcolor') ? 'has-error' : ''}}">
         <label for="backgroundcolor"> Select Background Color </label>
-        <input id="backgroundcolor" class="form-control" type="color" name="backgroundcolor">
+        <input id="backgroundcolor" class="form-control" type="color" name="backgroundcolor" value="{{ $theme['background_color'] }}">
       </div>
 
       <div class="input-group vertical-spacer col-lg-3 col-sm-6 col-lg-offset-1 {{ $errors -> has('fontcolor') ? 'has-error' : ''}}">
         <label for="fontcolor"> Select Font Color </label>
-        <input id="fontcolor" class="form-control" type="color" name="fontcolor">
+        <input id="fontcolor" class="form-control" type="color" name="fontcolor" value="{{ $theme['font_color'] }}">
       </div>
 
 
       <div class="input-group vertical-spacer col-lg-3 col-sm-6 {{ $errors -> has('transitionspeed') ? 'has-error' : ''}}">
         <label for="transitionspeed"> Post Transition Speed (in seconds) </label>
-        <input id="transitionspeed" class="form-control" type="text" name="transitionspeed">
+        <input id="transitionspeed" class="form-control" type="text" name="transitionspeed" value="{{ $theme['transition_speed'] }}">
       </div>
 
       <div class="input-group col-lg-3 col-sm-6 col-lg-offset-1">
         <label for="private"> Make Theme Private </label>
-        <input id="private" type="checkbox" name="private"> 
+        <input id="private" type="checkbox" name="private" @if($theme['is_private'] === '1') checked @endif> 
       </div>
 
       <div class="input-group vertical-spacer col-lg-12 col-sm-12">
-        <button type="submit" class="btn btn-primary vertical-spacer"> Save Theme </button>
+        {{ Form::submit('Update Theme', array('class' => 'btn btn-primary')) }}
         <input type="hidden" name="_token" value="{{ Session::token()}}">
+      </div>
+
+      <div class="input-group vertical-spacer col-lg-3 col-sm-6 col-lg-offset-4">
+        @if($theme['background_image'] !== "")
+          <label for="backgroundimagesample"> Background Image Sample </label>
+          <img style="margin: 0;" id="backgroundimagesample" class="image-sample" src="{{ $theme['background_image'] }}">
+        @endif
       </div>
 
     {!! Form::close() !!}

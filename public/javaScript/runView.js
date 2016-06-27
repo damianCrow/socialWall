@@ -11,12 +11,87 @@ $(document).ready(function() {
 	
 
 	var content = window.opener.content;
-	var data = window.opener.data;
+	var data = window.opener.data.data;
+	var theme = window.opener.data.theme;
 	var count = 0;
+	var delay;
 
-	tileView();
-	// galleryView(0);
-	
+	if(theme.length > 0) {
+
+		switch(theme[0].view) {
+
+			case 'Tile View': tileView();
+			
+			break;
+
+			case 'Gallery View': data.forEach(createGalleryViewPosts);
+
+			break;
+		}
+
+		if(theme[0].background_image !== "") {
+
+			$('body, .tile-wrapper').css('background-image', 'url(' + theme[0].background_image + ')');
+		}
+
+		$('body, .tile, .post-details').css({
+			'background-color': theme[0].background_color
+		});
+
+		$('.tile').css({
+			'border-color': theme[0].border_color
+		});
+
+		$('.post-author, .post-text, #previous-post, #next-post').css({
+			'color': theme[0].font_color
+		});
+
+		delay = theme[0].transition_speed * 1000;
+	}
+	else {
+
+		tileView();
+
+		delay = 10000;
+
+		$('body').css({
+			'background-color': '#262626'
+		});
+	}
+
+	function createGalleryViewPosts(post, index, arr) {
+
+		var element = '<div class="post-container"><img class="channel-logo"><span id="previous-post" class="icon-previous2"></span><span id="next-post" class="icon-next2"></span><div class="post-wrapper">' +
+
+		'<h2 class="post-author">' + post.post_username +'</h2>';
+
+		if(post.post_media !== "") {
+
+			element += '<div class="post-image-wrapper"> <img class="post-image" src="' + post.post_media + '"></div>';
+		}
+		else {
+
+			if(theme.length > 0) {
+				
+				if(theme[0].background_image !== "") {
+
+					element += '<div class="post-image-wrapper"> <img class="post-image" src="' + theme[0].background_image + '"></div>';
+				}
+			}
+		}
+
+		element += '<p class="post-text">' + post.post_text + '</p>' +
+		
+		'</div></div>' + '';
+
+		content.push(element);
+
+		if(index === arr.length - 1) {
+
+			galleryView(0);
+		}
+	}
+
 	function galleryView(i) {
 
 	  $('body').html(content[i]);
@@ -26,16 +101,40 @@ $(document).ready(function() {
 			'height': window.innerHeight
 		});
 		$('.post-wrapper').css({
-			'transform': 'translateY(-50%) translateX(-50%)'
+			'transform': 'translateY(-50%) translateX(-50%)',
 		});
 		$('.post-image').css({
 			'max-height': window.innerHeight / 10 * 6,
-			'max-width': '100%'
+			'max-width': '100%',
 		});
+
+		if(theme.length > 0) {
+
+			$('.post-container').css({
+				'background-color': theme[0].background_color
+			});
+
+			$('.post-image, .post-wrapper').css({
+				'border-color': theme[0].border_color
+			});
+
+			$('.post-wrapper, .post-image').css({
+				'border-color': theme[0].border_color
+			});
+
+			$('.post-author, .post-text, #previous-post, #next-post').css({
+				'color': theme[0].font_color
+			});
+
+			if(theme[0].background_image !== "") {
+
+				$('.post-container').css('background-image', 'url(' + theme[0].background_image + ')');
+			}
+		}
 
 		var fadeOut = setTimeout(function() {
 			$('.post-wrapper').fadeTo(1000, 0);
-		}, 9000);
+		}, delay - 1000);
 
 		var showNextPost = 	setTimeout(function() {
 
@@ -48,7 +147,7 @@ $(document).ready(function() {
 
 				galleryView(i + 1);
 			}
-		}, 10000);
+		}, delay);
 
 		$('#previous-post').click(function() {
 
@@ -85,8 +184,6 @@ $(document).ready(function() {
 
 	function tileView() {
 
-		$('body, .grid').css('background-color', '#262626');
-
 		$('body').html('<div class="grid">');
 
 		for(var i = 0; i < data.length; i++) {
@@ -96,23 +193,40 @@ $(document).ready(function() {
 			tile.classList.add('tile');
 			container.classList.add('tile-wrapper');
 
+			var channelLogo = '<img class="channel-logo" src="http://localhost:8000/assets/twitterLogo_blue.png">';
+
 			var postDetails = '<div class="post-details"><h2 class="post-author">' + data[i].post_username +'</h2><p class="post-text">' + data[i].post_text + '</p></div>';
 
-			$(tile).append(postDetails);
+			$(tile).append(postDetails, channelLogo);
 			$(container).append(tile);
+
+			$(tile).css({
+				'height': window.innerHeight / 4
+			});
 
 			if(data[i].post_media !== "") {
 
 				$(tile).css({
-					'background-image': 'url(' + data[i].post_media + ')',
-					'height': window.innerHeight / 4
+					'background-image': 'url(' + data[i].post_media + ')'
 				});
 			}
 			else {
-				$(tile).css({
-					'background-image': 'url(../../assets/twitterLogo_blue.png)',
-					'height': window.innerHeight / 4
-				});
+
+				if(theme.length > 0) {
+
+					if(theme[0].background_image !== "") {
+
+						$(tile).css({
+							'background-image': 'url(' + theme[0].background_image + ')'
+						});
+					}
+				}
+				else {
+
+					$(tile).css({
+						'background-image': 'url(../../assets/twitterLogo_blue.png)'
+					});
+				}
 			}
 
 			$(container).css({
@@ -125,7 +239,7 @@ $(document).ready(function() {
 
 			if(count === data.length - 1) {
 
-				timer(10000, bigTileTransition);
+				timer(delay, bigTileTransition);
 			}
 		}
 	}
@@ -168,7 +282,7 @@ $(document).ready(function() {
 			'z-index': 2
 		});
 
-		timer(10000, smallTileTransition, [randomNumber, position]);
+		timer(delay, smallTileTransition, [randomNumber, position]);
 	}
 
 	function smallTileTransition(index, position) {

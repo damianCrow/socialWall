@@ -52,6 +52,12 @@ html, body {
 	padding: 0;
 }
 
+body, .tile-wrapper, .post-container {
+	background-repeat: no-repeat;
+	background-size: 100% auto;
+	background-position: 50% 50%;
+}
+
 #admin, #private {
 	margin-left: 10px;
 	vertical-align: baseline;
@@ -159,7 +165,7 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 
 .post-container {
 	position: relative;
-	background-color: #5bc0de;
+	// background-color: #5bc0de;
 
 	.channel-logo {
 		position: absolute;
@@ -338,4 +344,20 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 		background-color: #262626;
 		width: 100%;
 	}
+}
+
+.color-sample {
+	width: 84px;
+  height: 42px;
+  display: inline-block;
+  margin: 0 0 0 42px;
+  position: absolute;
+  top: 0;
+}
+
+.image-sample {
+	@extend .color-sample;
+	height: 100px;
+	width: auto;
+	position: relative;
 }

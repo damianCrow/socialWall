@@ -5793,6 +5793,11 @@ html, body {
   margin: 0;
   padding: 0; }
 
+body, .tile-wrapper, .post-container {
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: 50% 50%; }
+
 #admin, #private {
   margin-left: 10px;
   vertical-align: baseline;
@@ -5866,8 +5871,7 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
       color: #32BD32; }
 
 .post-container {
-  position: relative;
-  background-color: #5bc0de; }
+  position: relative; }
   .post-container .channel-logo {
     position: absolute;
     left: 49%;
@@ -5983,5 +5987,18 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
     display: inline-block;
     background-color: #262626;
     width: 100%; }
+
+.color-sample, .image-sample {
+  width: 84px;
+  height: 42px;
+  display: inline-block;
+  margin: 0 0 0 42px;
+  position: absolute;
+  top: 0; }
+
+.image-sample {
+  height: 100px;
+  width: auto;
+  position: relative; }
 
 /*# sourceMappingURL=app.css.map */

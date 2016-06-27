@@ -21,7 +21,6 @@
             </a>
             <ul class="dropdown-menu">
               <li><a tabindex="-1" href="{{ URL::to('socialWall/create') }}"> Create New socialWall </a></li>
-              <!-- <li><a tabindex="-1" href="#"> Run socialWall </a></li> -->
               <li><a tabindex="-1" href="{{ URL::to('socialWall') }}"> Run, Edit Or Delete socialWall </a></li>
             </ul>
           </li>
@@ -31,7 +30,7 @@
             </a>
             <ul class="dropdown-menu">
               <li><a tabindex="-1" href="{{ URL::to('theme/create') }}"> Create New Theme </a></li>
-              <li><a tabindex="-1" href="{{ URL::to('theme') }}"> Edit Existing Theme </a></li>
+              <li><a tabindex="-1" href="{{ URL::to('theme') }}"> Preview, Edit Or Delete Theme </a></li>
             </ul>
           </li>
           <li @if (strpos($_SERVER['REQUEST_URI'], "user") !== false) class="active" @endif>

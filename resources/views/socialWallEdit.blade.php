@@ -56,7 +56,9 @@
 
         <select id="themeselect" name="themeselect" class="form-control" value="{{ Request::old('themeselect')}}">
 
-          <option value="theme 1"> theme 1 </option>
+          @foreach ($themes as $theme)
+            <option value="{{ $theme -> name }}"> {{ $theme -> name }} </option>
+          @endforeach
         </select>
 
       </div>
@@ -65,11 +67,10 @@
 
         <label class="block" for="resultsorder"> Select Results Ordering </label>
 
-        <select id="resultsorder" name="resultsorder" class="form-control" value="">  
-          <option class="option" value=" {{ $socialWall['results_order'] }} "> {{ $socialWall['results_order'] }} </option>
-          <option class="option" value="Recent"> Recent </option>
-          <option class="option" value="Popular"> Popular </option>
-          <option class="option" value="Mixed"> Mixed </option>
+        <select id="resultsorder" name="resultsorder" class="form-control">  
+          <option  @if($socialWall['results_order'] === 'Recent') selected @endif> Recent </option>
+          <option  @if($socialWall['results_order'] === 'Popular') selected @endif> Popular </option>
+          <option  @if($socialWall['results_order'] === 'Mixed') selected @endif> Mixed </option>
         </select>
 
       </div>
@@ -88,17 +89,6 @@
   </div>
 
   <script>
-
-    for (var i = 0; i < $('#resultsorder')[0].length; i++) {
-      
-      if($('#resultsorder')[0][i].text == '{{ $socialWall['results_order'] }}') {
-
-        if (i != 0) {
-
-          $('#resultsorder')[0][i].remove();
-        }
-      }
-    }
       
     @if($media_channels != null)
       @foreach ($media_channels as $channel)

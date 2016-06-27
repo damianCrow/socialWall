@@ -9,6 +9,7 @@ use socialwall\twitterPosts;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use socialwall\theme;
 use GuzzleHttp;
 use Validator;
 use Session;
@@ -34,8 +35,12 @@ class socialWallController extends Controller {
   }
 
   public function create() {
-      
-  	return view('socialWallCreate');
+
+  	$themes = theme::where('is_private', '=', '0')
+  		->orWhere('user_id', '=', Auth::user()['id']) -> get();
+    
+  	return view('socialWallCreate')
+  		->with('themes', $themes);
   }
 
   public function approvePost() {
@@ -86,7 +91,7 @@ class socialWallController extends Controller {
 
 		Session::flash('message', 'You have successfully created a new socialWall.');
 
-		return redirect() -> route('dashboard');
+		return redirect() -> action('socialWallController@index');
 	}
 
   public function show($id) {
@@ -253,6 +258,9 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
 
   public function edit($id) {
 
+  	$themes = theme::where('is_private', '=', '0')
+  		->orWhere('user_id', '=', Auth::user()['id']) -> get();
+
   	$socialWall = socialWall::find($id);
 
   	$hashtags = explode(",", $socialWall['search_hashtags']);
@@ -265,7 +273,8 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
     	'hashtags' => $hashtags,
     	'target_accounts' => $target_accounts,
     	'filter_keywords' => $filter_keywords,
-    	'media_channels' => $media_channels
+    	'media_channels' => $media_channels,
+    	'themes' => $themes
     ]);
   }
 
@@ -333,7 +342,7 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
 
       Session::flash('message', 'You have successfully updated this socialWall.');
 
-      return redirect() -> route('dashboard');
+     	return redirect() -> action('socialWallController@index');
 		}
   }
 
@@ -345,10 +354,14 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
 
     Session::flash('message', 'You have successfully deleted this socialWall!');
 
-    return redirect() -> route('dashboard');
+    return redirect() -> back();
   }
 
   public function socialWallRun($id) {
+
+  	$themeName = socialWall::find($id) -> theme;
+
+  	$theme = theme::where('name', '=', $themeName) -> get();
 
   	$data = twitterPosts::where('socialwall_id', '=', $id) 
   		-> where('approved', '=', '1') -> get();
@@ -358,7 +371,9 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
   		return json_encode("You have not approved any posts for this socialWall!");
   	}
   	else {
-  		return json_encode($data);
+
+  		$response = ['data' => $data, 'theme' => $theme];
+  		return json_encode($response);
   	}
   }
 }
