@@ -27,11 +27,15 @@ $(document).ready(function() {
 			case 'Gallery View': data.forEach(createGalleryViewPosts);
 
 			break;
+
+			case 'Default View': tileView();
+
+			break;
 		}
 
 		if(theme[0].background_image !== "") {
 
-			$('body, .tile-wrapper').css('background-image', 'url(' + theme[0].background_image + ')');
+			$('body').css('background-image', 'url(' + theme[0].background_image + ')');
 		}
 
 		$('body, .tile, .post-details').css({
@@ -73,9 +77,9 @@ $(document).ready(function() {
 
 			if(theme.length > 0) {
 				
-				if(theme[0].background_image !== "") {
+				if(theme[0].placeholder_image !== "") {
 
-					element += '<div class="post-image-wrapper"> <img class="post-image" src="' + theme[0].background_image + '"></div>';
+					element += '<div class="post-image-wrapper"> <img class="post-image" src="' + theme[0].placeholder_image + '"></div>';
 				}
 			}
 		}
@@ -214,10 +218,10 @@ $(document).ready(function() {
 
 				if(theme.length > 0) {
 
-					if(theme[0].background_image !== "") {
+					if(theme[0].placeholder_image !== "") {
 
 						$(tile).css({
-							'background-image': 'url(' + theme[0].background_image + ')'
+							'background-image': 'url(' + theme[0].placeholder_image + ')'
 						});
 					}
 				}

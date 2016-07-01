@@ -82,7 +82,7 @@ function getSocialWallRunData(url) {
     method: 'GET',
     url: url,
     success: function(response) {
-
+console.log(response);
     	if(typeof(JSON.parse(response)) !== 'object') {
 
     		var message = '<div class="alert alert-warning fade in"><h4 class="alert-message">' + response + '<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>';
@@ -101,29 +101,6 @@ function getSocialWallRunData(url) {
     }
   });
 }
-
-// function createPost(post, index, arr) {
-
-// 	var element = '<div class="post-container"><img class="channel-logo"><span id="previous-post" class="icon-previous2"></span><span id="next-post" class="icon-next2"></span><div class="post-wrapper">' +
-
-// 	'<h2 class="post-author">' + post.post_username +'</h2>';
-
-// 	if(post.post_media !== "") {
-
-// 		element += '<div class="post-image-wrapper"> <img class="post-image" src="' + post.post_media + '"></div>';
-// 	}
-
-// 	element += '<p class="post-text">' + post.post_text + '</p>' +
-	
-// 	'</div></div>' + '';
-
-// 	content.push(element);
-
-// 	if(index === arr.length - 1) {
-
-// 		
-// 	}
-// }
 
 function createView() {
 

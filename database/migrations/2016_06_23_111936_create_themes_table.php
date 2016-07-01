@@ -21,7 +21,8 @@ class CreateThemesTable extends Migration
             $table->string('font_color');
             $table->string('border_color');
             $table->string('background_color');
-            $table->binary('background_image');
+            $table->string('background_image');
+            $table->string('placeholder_image');
             $table->string('is_private');
             $table->timestamps();
         });

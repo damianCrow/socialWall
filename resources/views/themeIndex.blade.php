@@ -20,6 +20,9 @@
       <li class="list-group-item">Background Color: <span class="color-sample" style="background-color: {{ $theme->background_color }};"></span></li>
       <li class="list-group-item">Background Image: @if($theme->background_image !== '') <img class="image-sample" src="{{ $theme->background_image }}"> @else <strong> None </strong> @endif </li>
 
+      <li class="list-group-item">Post Placeholder Image: @if($theme->placeholder_image !== '') <img class="image-sample" src="{{ $theme->placeholder_image }}"> @else <strong> None </strong> @endif </li>
+
+
       @if($theme->is_private == '0') 
         <li class="list-group-item">Private Theme: <strong> No </strong></li>
       @else

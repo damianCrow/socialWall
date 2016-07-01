@@ -61,8 +61,8 @@
 
 			$this -> validate($request, [
 				'email' => 'required|email|unique:users',
-				'username' => 'required|max:80',
-				'password' => 'required|min:6',
+				'username' => 'required|max:80|unique:users',
+				'password' => 'required|min:6'
 			]);
 
 			if($request['admin']) {
@@ -89,7 +89,7 @@
 
 			Session::flash('message', 'You have successfully created a new user.');
 
-			return redirect() -> route('dashboard');
+			return redirect() -> action('userController@index');
 		}
     
     public function edit($id) {
@@ -106,9 +106,9 @@
 			$user = User::find($id);
 
 			$rules = [
-				'email' => 'required|email',
-				'username' => 'required|max:80',
-				'password' => 'required|min:6',
+				'email' => 'required|email|unique:users,email,'. $id,
+				'username' => 'required|max:80|unique:users,username,' .$id,
+				'password' => 'required|min:6'
 			];
             
       $validator = Validator::make($request, $rules);
@@ -133,7 +133,10 @@
 
         return View::make('userEdit')
           ->withErrors($validator)
-          ->with('user', $user);         
+          ->with([
+          	'user' => $user,
+          	'request' => $request
+          	]);         
           
       } 
       else {
@@ -147,7 +150,7 @@
 
         Session::flash('message', 'You have successfully updated the user information.');
 
-        return redirect() -> route('dashboard');
+        return redirect() -> action('userController@index');
       }
 		}
 
@@ -158,7 +161,7 @@
 
       Session::flash('message', 'You have successfully deleted this user!');
 
-      return redirect() -> route('dashboard');
+      return redirect() -> action('userController@index');
     }
 	}
 ?>

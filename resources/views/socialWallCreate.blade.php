@@ -24,12 +24,12 @@
     
     <form action="{{ URL::to('socialWall/') }}" method="post">
 
-      <div class="input-group vertical-spacer col-lg-3 {{ $errors -> has('name') ? 'has-error' : ''}}">
+      <div class="input-group vertical-spacer col-lg-3 col-sm-6 {{ $errors -> has('name') ? 'has-error' : ''}}">
         <label for="name"> Enter socialWall Name </label>
         <input id="name" class="form-control" type="text" name="name" value="{{ Request::old('name')}}">
       </div>
 
-      <div class="input-group col-lg-offset-1 col-lg-3 vertical-spacer {{ $errors -> has('mediachannels') ? 'has-error' : ''}}">
+      <div class="input-group col-lg-offset-1 col-lg-3 col-sm-6 vertical-spacer {{ $errors -> has('mediachannels') ? 'has-error' : ''}}">
 
         <label class="block" for="mediachannels[]"> Select Media Channels </label>
 
@@ -44,17 +44,17 @@
 
       </div>
 
-      <div class="input-group vertical-spacer col-lg-3 col-lg-offset-1 {{ $errors -> has('targetaccounts') ? 'has-error' : ''}}">
+      <div class="input-group vertical-spacer col-lg-3 col-sm-6 col-lg-offset-1 {{ $errors -> has('targetaccounts') ? 'has-error' : ''}}">
         <label for="targetaccounts"> Target Accounts </label>
         <input class="form-control" id="targetaccounts" type="text" name="targetaccounts" value="{{ Request::old('targetaccounts')}}">
       </div>
 
-      <div class="input-group vertical-spacer col-lg-3 {{ $errors -> has('searchcriteria') ? 'has-error' : ''}}">
+      <div class="input-group vertical-spacer col-lg-3 col-sm-6 {{ $errors -> has('searchcriteria') ? 'has-error' : ''}}">
         <label for="searchcriteria"> Search Hashtags </label>
         <input class="form-control" id="searchcriteria" type="text" name="searchcriteria" value="{{ Request::old('searchcriteria')}}">
       </div>
 
-      <div class="input-group col-lg-offset-1 col-lg-3 vertical-spacer {{ $errors -> has('themeselect') ? 'has-error' : ''}}">
+      <div class="input-group col-lg-offset-1 col-lg-3 col-sm-6 vertical-spacer {{ $errors -> has('themeselect') ? 'has-error' : ''}}">
 
         <label class="block" for="themeselect"> Select Theme </label>
 
@@ -66,7 +66,7 @@
 
       </div>
 
-      <div class="input-group col-lg-offset-1 col-lg-3 vertical-spacer {{ $errors -> has('resultsorder') ? 'has-error' : ''}}">
+      <div class="input-group col-lg-offset-1 col-lg-3 col-sm-6 vertical-spacer {{ $errors -> has('resultsorder') ? 'has-error' : ''}}">
 
         <label class="block" for="resultsorder"> Select Results Ordering </label>
 
@@ -78,12 +78,12 @@
 
       </div>
 
-      <div class="input-group vertical-spacer col-lg-3 {{ $errors -> has('keywordfilter') ? 'has-error' : ''}}">
+      <div class="input-group vertical-spacer col-lg-3 col-sm-6 {{ $errors -> has('keywordfilter') ? 'has-error' : ''}}">
         <label for="keywordfilter"> Results Filter Keywords </label>
         <input class="form-control" id="keywordfilter" type="text" name="keywordfilter" value="{{ Request::old('keywordfilter')}}">
       </div>
 
-      <div class="input-group vertical-spacer col-lg-12">
+      <div class="input-group vertical-spacer col-lg-12 col-sm-12">
         <button type="submit" class="btn btn-primary vertical-spacer"> Save socialWall </button>
         <input type="hidden" name="_token" value="{{ Session::token()}}">
       </div>

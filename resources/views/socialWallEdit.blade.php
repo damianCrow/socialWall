@@ -56,8 +56,9 @@
 
         <select id="themeselect" name="themeselect" class="form-control" value="{{ Request::old('themeselect')}}">
 
+          <option value="Default Theme" @if($socialWall['theme'] === 'Default Theme') selected @endif> Default Theme </option>
           @foreach ($themes as $theme)
-            <option value="{{ $theme -> name }}"> {{ $theme -> name }} </option>
+            <option value="{{ $theme -> name }}" @if($socialWall['theme'] === $theme['name']) selected @endif> {{ $theme -> name }} </option>
           @endforeach
         </select>
 

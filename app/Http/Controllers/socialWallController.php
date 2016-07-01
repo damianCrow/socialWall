@@ -282,9 +282,10 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
     
     $socialWall = socialWall::find($id);
     $request = Input::all();
+    $themes = theme::all();
 			
 		$rules = [
-			'name' => 'required|min:4',
+			'name' => 'required|min:4|unique:social_walls,name,' .$id,
 			'mediachannels' => 'required',
 			'searchcriteria' => 'required_if:targetaccounts,""',
 		];
@@ -315,7 +316,8 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
         		'hashtags' => $hashtags,
 			    	'target_accounts' => $target_accounts,
 			    	'filter_keywords' => $filter_keywords,
-			    	'media_channels' => $media_channels
+			    	'media_channels' => $media_channels,
+			    	'themes' => $themes
         	]);         
         
     } 
