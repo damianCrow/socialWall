@@ -24,7 +24,7 @@ class socialWallController extends Controller {
     $this->middleware('auth');
   }
 
-	public $responseArray = [];
+  public $responseArray = [];
 
   public function index() {
      
@@ -107,92 +107,21 @@ class socialWallController extends Controller {
 
 			$socialWall = socialWall::find($id);
 
-	   	$oldCharacters = [',', '"'];
-	   	$newCharacters = [' OR ', ''];
+			$returnedQuery = socialWall::buildTwitterQuery($socialWall);
 
-	   	$contentOrdering = '&result_type=' . strtolower(str_replace(' ', '', $socialWall['results_order']));
+			if(is_array($returnedQuery)) {
 
-	   	if ($socialWall['search_hashtags']) {
-
-	   		$hashtagsArray = explode(',', $socialWall['search_hashtags']);
-
-	   		$hashtags = urlencode(str_replace($oldCharacters, $newCharacters, $socialWall['search_hashtags']));
-	   	}
-	   	else {
-
-				$hashtags = '';
-			}
-
-			if ($socialWall['filter_keywords']) {
-
-				$keywordsArray = explode(',', $socialWall['filter_keywords']);
-
-				$keywords = urlencode(str_replace(',', ' OR ', $socialWall['filter_keywords']) . ' ');
-			}
-			else {
-
-				$keywords = '';
-			}
-
-			if ($socialWall['target_accounts']) {
-
-				$accountsArray = explode(',', $socialWall['target_accounts']);
-
-				foreach ($accountsArray as $account) {
-
-					$query = 'statuses/user_timeline.json?screen_name=' . $account . '&include_rts=false' . '&count=200';
-
-					foreach ($this -> makeRequest($query) as $post) {
-
-						if(isset($hashtagsArray)) {
-
-							foreach ($hashtagsArray as $hashtag) {
-
-								if(strpos($post->text, $hashtag)) {
-
-									array_push($this->responseArray, $post);
-								}
-							}
-						}
-						if(isset($keywordsArray)) {
-
-							foreach ($keywordsArray as $keyword) {
-
-								if(strpos($post->text, $keyword)) {
-
-									array_push($this->responseArray, $post);
-								}
-							}
-						}
-
-						if(!isset($keywordsArray) && !isset($hashtagsArray)) {
-							
-							array_push($this->responseArray, $post);
-						}
-					}
+				foreach ($returnedQuery['queries'] as $query) {
+					
+					$this -> populateResponseArray(socialWall::makeRequest($query, $returnedQuery['filterParams']), $id);
 				}
 			}
 			else {
 
-				$query = 'search/tweets.json?q=' . $keywords . $hashtags . $contentOrdering;
-
-				$this -> makeRequest($query);
+				$this -> populateResponseArray(socialWall::makeRequest($returnedQuery, null), $id);
 			}
-			echo $query;
-echo 'before ' . Count($this->responseArray) . ' Tweets';
-// 			$reTweet = 'RT';
 
-// 			foreach ($this->responseArray as $key => $value) {
-
-// 				$test = strpos($value->text, $reTweet);
-
-// 				if($test !== false) {
-
-// 					 unset($this->responseArray[$key]);
-// 				}
-// 			}
-// echo ' after ' . Count($this->responseArray) . ' Tweets';
-			$this->savePosts($this->responseArray, $id);
+echo ' after ' . Count($this->responseArray) . ' Tweets';
 		
 	    $data = twitterPosts::where('socialwall_id', '=', $id)->paginate(25);
 	    
@@ -201,60 +130,38 @@ echo 'before ' . Count($this->responseArray) . ' Tweets';
 		}
   }
 
-  public function savePosts($array, $wallId) {
+  public function populateResponseArray($responseObj, $id) {
 
-  	foreach ($array as $data) {
-  		
-  		$posts = new twitterPosts();
-	  	$posts -> socialwall_id = $wallId;
-	  	$posts -> post_id = $data -> id;
-	  	$posts -> post_username = utf8_encode($data -> user -> screen_name);
-	  	$posts -> post_text = utf8_encode($data -> text);
-	  	$posts -> approved = '';
+  	if(count($responseObj) < 1) {
+			
+			return Session::flash('message', 'There are no posts which contain any of the hashtags or keywords provided');
+		}
+		else {
 
-	  	if(isset($data -> entities -> media)) {
+			if(isset($responseObj -> statuses)) {
+				
+				$data = $responseObj -> statuses;
+			}
+			else {
 
-	  		$posts -> post_media = $data -> entities -> media[0]-> media_url;
-	  	}
-	  	else {
+				$data = $responseObj;
+			}
 
-	  		$posts -> post_media = '';
-	  	}
-
-	  	$posts -> save();	
-
-	  	Session::flash('message', 'You have successfully saved posts for socialWall '. $wallId);
-  	}
-  }
-
-  public function makeRequest($query) {
-
-  	$twitterBearerToken = "Bearer AAAAAAAAAAAAAAAAAAAAAANHvQAAAAAAabl2KF9Ig7CAgBZ6v2ahka2Kf5s%3DqTa8l2czzBRTUysN2wwpcAiSs1TV2XcGnGOABfayAfu1YySRxG";
-
-  	$twitterClient = new GuzzleHttp\Client([
-			'base_uri' => 'https://api.twitter.com/1.1/'
-		]);
-
-		$response = $twitterClient->request('GET', $query,
-			['headers' => ['Authorization' => $twitterBearerToken]
-		]);
-
-		$responseObj = json_decode($response->getBody());
-
-		if(isset($responseObj -> search_metadata -> next_results)) {
-
-			foreach ($responseObj -> statuses as $value) {
+			foreach ($data as $value) {
 
 				array_push($this->responseArray, $value);
 			}
 
-			$this -> makeRequest('search/tweets.json' . $responseObj -> search_metadata -> next_results);
-		}
-		else {
+			if(isset($responseObj -> search_metadata -> next_results)) {
 
-			return $responseObj;
+				$this -> populateResponseArray(socialWall::makeRequest('search/tweets.json' . $responseObj -> search_metadata -> next_results, null), $id);
+			}
+			else {
+				
+				socialWall::savePosts($this->responseArray, $id);
+			}
 		}
-  }
+	}
 
   public function edit($id) {
 
