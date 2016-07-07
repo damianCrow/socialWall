@@ -13,7 +13,8 @@
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.6/jquery.tagsinput.min.js">
       </script>
       <script type="text/javascript" src="https://npmcdn.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
-      <script type="text/javascript" src="{{ URL::asset('javaScript/app.js') }}"></script>
+      
+  </head>
   </head>
   <body>
 
@@ -44,6 +45,7 @@
       </div>
     </div>
 
+    <script type="text/javascript" src="{{ URL::asset('javaScript/app.js') }}"></script>
     @yield('scripts')
   </body>
 </html>

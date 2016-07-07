@@ -64,14 +64,30 @@ class socialWallController extends Controller {
 
 		$this -> validate($request, [
 			'name' => 'required|unique:social_walls|min:4',
-			'mediachannels' => 'required',
-			'searchcriteria' => 'required_if:targetaccounts,""',
+			'mediachannels' => 'required'
 		]);
+
+		$targetAccountsStringArray = [
+			'Facebookaccounts',
+			'Twitteraccounts',
+			'Vineaccounts',
+			'Instagramaccounts' 
+		];
+
+		$targetAccountsArray = [];
+
+		foreach($targetAccountsStringArray as $value) {
+
+			if(isset($request[$value])) {
+
+				$targetAccountsArray[$value] = explode(',', $request[$value]);
+			}
+		}
 
 		$name = $request['name'];
 		$media_channels = json_encode($request['mediachannels']);
 		$search_hashtags = $request['searchcriteria'];
-		$target_accounts = $request['targetaccounts'];
+		$target_accounts = json_encode($targetAccountsArray);
 		$theme = $request['themeselect'];
 		$results_order = $request['resultsorder'];
 		$filter_keywords = $request['keywordfilter'];
@@ -98,7 +114,7 @@ class socialWallController extends Controller {
 
 		if(Input::get('page') || twitterPosts::where('socialwall_id', '=', $id)->exists()) {
 			
-			$data = twitterPosts::where('socialwall_id', '=', $id)->paginate(25);
+			$data = twitterPosts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
@@ -107,23 +123,37 @@ class socialWallController extends Controller {
 
 			$socialWall = socialWall::find($id);
 
-			$returnedQuery = socialWall::buildTwitterQuery($socialWall);
+			foreach(json_decode($socialWall['media_channels']) as $channel) {
 
-			if(is_array($returnedQuery)) {
-
-				foreach ($returnedQuery['queries'] as $query) {
+				if($channel === 'Twitter') {
 					
-					$this -> populateResponseArray(socialWall::makeRequest($query, $returnedQuery['filterParams']), $id);
-				}
-			}
-			else {
+					$returnedQuery = socialWall::buildQuery($socialWall, $channel);
 
-				$this -> populateResponseArray(socialWall::makeRequest($returnedQuery, null), $id);
+					if(is_array($returnedQuery)) {
+
+						foreach ($returnedQuery['queries'] as $query) {
+							
+							$this -> populateResponseArray(socialWall::makeRequestTW($query, $returnedQuery['filterParams']), $id);
+						}
+					}
+					else {
+
+						$this -> populateResponseArray(socialWall::makeRequestTW($returnedQuery, null), $id);
+					}
+				}
+				if($channel === 'Facebook') {
+
+					$accounts = json_decode($socialWall['target_accounts']) -> Facebookaccounts;
+					
+					$filterParams = socialWall::buildQuery($socialWall, $channel);
+
+					$this -> populateResponseArray(socialWall::makeRequestFB($accounts, $filterParams), $id);
+				}
 			}
 
 echo ' after ' . Count($this->responseArray) . ' Tweets';
 		
-	    $data = twitterPosts::where('socialwall_id', '=', $id)->paginate(25);
+	    $data = twitterPosts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
@@ -154,7 +184,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 
 			if(isset($responseObj -> search_metadata -> next_results)) {
 
-				$this -> populateResponseArray(socialWall::makeRequest('search/tweets.json' . $responseObj -> search_metadata -> next_results, null), $id);
+				$this -> populateResponseArray(socialWall::makeRequestTW('search/tweets.json' . $responseObj -> search_metadata -> next_results, null), $id);
 			}
 			else {
 				
@@ -170,8 +200,14 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 
   	$socialWall = socialWall::find($id);
 
+  	$target_accounts = [];
+
+  	foreach (json_decode($socialWall['target_accounts']) as $key => $value) {
+
+  		$target_accounts[$key] = $value;
+  	}
+
   	$hashtags = explode(",", $socialWall['search_hashtags']);
-  	$target_accounts = explode(",", $socialWall['target_accounts']);
   	$filter_keywords = explode(",", $socialWall['filter_keywords']);
   	$media_channels = json_decode($socialWall['media_channels']);
 
@@ -194,12 +230,11 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 		$rules = [
 			'name' => 'required|min:4|unique:social_walls,name,' .$id,
 			'mediachannels' => 'required',
-			'searchcriteria' => 'required_if:targetaccounts,""',
 		];
             
     $validator = Validator::make($request, $rules);
 
-    if ($validator->fails()) {
+    if($validator->fails()) {
 
 	    $hashtags = explode(",", $request['searchcriteria']);
 	  	$target_accounts = explode(",", $request['targetaccounts']);

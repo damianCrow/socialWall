@@ -30,27 +30,22 @@
         <label class="block" for="mediachannels[]"> Select Media Channels </label>
 
         <select id="mediachannels" name="mediachannels[]" class="hide form-control" value="" multiple>
-          <optgroup value="Facebook Instagram Twitter Vine" label="All Channels">
-            <option value="Facebook"> Facebook </option>
-            <option value="Instagram"> Instagram </option>
-            <option value="Twitter"> Twitter </option>
-            <option value="Vine"> Vine </option>
-          </optgroup>
+          
+          <option value="Facebook"> Facebook </option>
+          <option value="Instagram"> Instagram </option>
+          <option value="Twitter"> Twitter </option>
+          <option value="Vine"> Vine </option>
+          
         </select>
 
       </div>
 
-      <div class="input-group vertical-spacer col-lg-3 col-lg-offset-1 {{ $errors -> has('targetaccounts') ? 'has-error' : ''}}">
-        <label for="targetaccounts"> Target Accounts (optional) </label>
-        <input class="form-control" id="targetaccounts" type="text" name="targetaccounts" value="">
-      </div>
-
-      <div class="input-group vertical-spacer col-lg-3 {{ $errors -> has('searchcriteria') ? 'has-error' : ''}}">
+      <div class="input-group vertical-spacer col-lg-3 col-lg-offset-1 {{ $errors -> has('searchcriteria') ? 'has-error' : ''}}">
         <label for="searchcriteria"> Search Hashtags </label>
         <input class="form-control" id="searchcriteria" type="text" name="searchcriteria" value="">
       </div>
 
-      <div class="input-group col-lg-offset-1 col-lg-3 vertical-spacer {{ $errors -> has('themeselect') ? 'has-error' : ''}}">
+      <div class="input-group col-lg-3 vertical-spacer {{ $errors -> has('themeselect') ? 'has-error' : ''}}">
 
         <label class="block" for="themeselect"> Select Theme </label>
 
@@ -76,12 +71,12 @@
 
       </div>
 
-      <div class="input-group vertical-spacer col-lg-3 {{ $errors -> has('keywordfilter') ? 'has-error' : ''}}">
+      <div class="input-group vertical-spacer col-lg-3 col-lg-offset-1 {{ $errors -> has('keywordfilter') ? 'has-error' : ''}}">
         <label for="keywordfilter"> Results Filter Keywords (optional) </label>
         <input class="form-control" id="keywordfilter" type="text" name="keywordfilter" value="{{ Request::old('keywordfilter')}}">
       </div>
 
-      <div class="input-group vertical-spacer col-lg-12">
+      <div class=" submit-button input-group vertical-spacer col-lg-12">
         {{ Form::submit('Update socialWall', array('class' => 'btn btn-primary')) }}
       </div>
 
@@ -89,36 +84,47 @@
 
   </div>
 
+@endsection
+
+@section('scripts')
+  
   <script>
-      
-    @if($media_channels != null)
-      @foreach ($media_channels as $channel)
-      
-        $('#mediachannels').multiselect('select', ['{{$channel}}']);
-      @endforeach
-    @endif
 
-    @if($target_accounts != null)
-      @foreach ($target_accounts as $account)
+    $(window).load(function() {
 
-        $('#targetaccounts').addTag('{{ $account }}');
-      @endforeach
-    @endif
+      @if($media_channels != null)
+        @foreach($media_channels as $channel)
+        
+          selectChannel('#mediachannels','{{$channel}}');  
+     
+        @endforeach
+      @endif
 
-    @if($hashtags != null)
-      @foreach ($hashtags as $hashtag)
+      @if(!empty($target_accounts))
+        @foreach($target_accounts as $key => $account)
 
-        $('#searchcriteria').addTag('{{ $hashtag }}');
-      @endforeach
-    @endif
+          @foreach($account as $tag)
 
-    @if($filter_keywords != null)
-      @foreach ($filter_keywords as $keyword)
+            $('#{{$key}}').addTag('{{ $tag }}'); 
+          @endforeach
 
-        $('#keywordfilter').addTag('{{ $keyword }}');
-      @endforeach
-    @endif
+        @endforeach
+      @endif
 
+      @if($hashtags != null)
+        @foreach ($hashtags as $hashtag)
+
+          $('#searchcriteria').addTag('{{ $hashtag }}');
+        @endforeach
+      @endif
+
+      @if($filter_keywords != null)
+        @foreach ($filter_keywords as $keyword)
+
+          $('#keywordfilter').addTag('{{ $keyword }}');
+        @endforeach
+      @endif
+
+    });
   </script>
-
 @endsection

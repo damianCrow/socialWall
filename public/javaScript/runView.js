@@ -63,9 +63,27 @@ $(document).ready(function() {
 		});
 	}
 
+	function assignLogo(post) {
+
+		var src;
+
+		switch(post.post_id.substring(0, 2)) {
+
+			case 'FB': src = '../../assets/facebookLogo.png';
+
+			break;
+
+			case 'TW': src = '../../assets/twitterLogo_blue.png';
+
+			break;
+		}
+
+		return src;
+	}
+
 	function createGalleryViewPosts(post, index, arr) {
 
-		var element = '<div class="post-container"><img class="channel-logo"><span id="previous-post" class="icon-previous2"></span><span id="next-post" class="icon-next2"></span><div class="post-wrapper">' +
+		var element = '<div class="post-container"><img class="channel-logo" src="' + assignLogo(post) + '"><span id="previous-post" class="icon-previous2"></span><span id="next-post" class="icon-next2"></span><div class="post-wrapper">' +
 
 		'<h2 class="post-author">' + post.post_username +'</h2>';
 
@@ -99,7 +117,7 @@ $(document).ready(function() {
 	function galleryView(i) {
 
 	  $('body').html(content[i]);
-	  $('.channel-logo').attr('src', '../../assets/twitterLogo_white.png');
+	  // $('.channel-logo').attr('src', assignLogo(content[i]));
 		$('.post-wrapper').fadeTo(1300, 1);
 		$('.post-container').css({
 			'height': window.innerHeight
@@ -197,7 +215,7 @@ $(document).ready(function() {
 			tile.classList.add('tile');
 			container.classList.add('tile-wrapper');
 
-			var channelLogo = '<img class="channel-logo" src="http://localhost:8000/assets/twitterLogo_blue.png">';
+			var channelLogo = '<img class="channel-logo" src="' + assignLogo(data[i]) + '">';
 
 			var postDetails = '<div class="post-details"><h2 class="post-author">' + data[i].post_username +'</h2><p class="post-text">' + data[i].post_text + '</p></div>';
 

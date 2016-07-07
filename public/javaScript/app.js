@@ -42,34 +42,54 @@ $(document).ready(function() {
 
   $('#mediachannels').multiselect({
     enableClickableOptGroups: true,
+    onChange: function(option, checked) {
+      
+      if(!$('#' + $(option).val()).length) {
+        
+        var Accounts = '<div id="' + $(option).val() + '" class="input-group vertical-spacer col-lg-3 col-sm-6">'
+          + '<label for="' + $(option).val() + 'accounts"> Add ' + $(option).val() + ' Target Accounts </label>'
+          + '<input class="form-control" id="' + $(option).val() + 'accounts" type="text" name="' + $(option).val() + 'accounts">'
+        + '</div>'
+        
+        $(Accounts).insertBefore($('.submit-button'));
+        
+        createTagsInput($('#' + $(option).val() + 'accounts'));
+      }
+      if($('#' + $(option).val()).length) {
+
+        if(option[0].selected === false) {
+
+          $('#' + $(option).val()).remove();
+          $('#' + $(option).val() + 'accounts').tagsInput('destroy');
+        }
+      }
+    }
   });
 
-  $('#targetaccounts').tagsInput({
-    'defaultText': 'Account',
-    'placeholderColor' : '#333333',
-    'height': 'auto',
-    'width': '100%'
-  });
+  createTagsInput('#targetaccounts');
+  createTagsInput('#searchcriteria');
+  createTagsInput('#keywordfilter'); 
 
-  $('#searchcriteria').tagsInput({
-    'defaultText': 'Add #tag',
-    'placeholderColor' : '#333333',
-    'height': 'auto',
-    'width': '100%'
-  });
+  function createTagsInput(ele) {
 
-  $('#keywordfilter').tagsInput({
-    'defaultText': 'Keyword',
-    'placeholderColor' : '#333333',
-    'height': 'auto',
-    'width': '100%'
-  });
+    $(ele).tagsInput({
+      'defaultText': 'Add Tag',
+      'placeholderColor' : '#333333',
+      'height': 'auto',
+      'width': '100%'
+    });
+  }
 
   $(".delete").on("submit", function() {
 
      return confirm("Are you sure you want to delete this socialWall?");
   });
 });
+
+function selectChannel(ele, value) {
+
+  $(ele).multiselect('select', [value], true);
+}
 
 // SOCIALWALL RUN CODE \\
 
@@ -82,7 +102,7 @@ function getSocialWallRunData(url) {
     method: 'GET',
     url: url,
     success: function(response) {
-console.log(response);
+
     	if(typeof(JSON.parse(response)) !== 'object') {
 
     		var message = '<div class="alert alert-warning fade in"><h4 class="alert-message">' + response + '<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>';

@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use GuzzleHttp;
 use Session;
 use Config;
+use Facebook;
+use stdClass;
 
 class socialWall extends Model {
 
-	public static function buildTwitterQuery($socialWall) {
+	public static function buildQuery($socialWall, $channel) {
 
 		$testArray = ['filterParams' => [], 'queries' => []];
 
@@ -19,13 +21,13 @@ class socialWall extends Model {
 
    	$contentOrdering = '&result_type=' . strtolower(str_replace(' ', '', $socialWall['results_order']));
 
-   	if ($socialWall['search_hashtags']) {
+   	if($socialWall['search_hashtags']) {
 
    		$hashtagsArray = explode(',', $socialWall['search_hashtags']);
 
    		foreach ($hashtagsArray as $value) {
 
-   			array_push($testArray['filterParams'], $value);
+   			array_push($testArray['filterParams'], str_replace('#', '', $value));
    		}
 
    		$hashtags = urlencode(str_replace($oldCharacters, $newCharacters, $socialWall['search_hashtags']));
@@ -35,7 +37,7 @@ class socialWall extends Model {
 			$hashtags = '';
 		}
 
-		if ($socialWall['filter_keywords']) {
+		if($socialWall['filter_keywords']) {
 
 			$keywordsArray = explode(',', $socialWall['filter_keywords']);
 			
@@ -50,12 +52,15 @@ class socialWall extends Model {
 
 			$keywords = '';
 		}
+		if($channel === 'Facebook') {
 
-		if ($socialWall['target_accounts']) {
+			return $testArray['filterParams'];
+		}
+		if(isset(json_decode($socialWall['target_accounts'])-> Twitteraccounts) && $channel === 'Twitter') {
 
 			$queryArray = [];
 
-			$accountsArray = explode(',', $socialWall['target_accounts']);
+			$accountsArray = json_decode($socialWall['target_accounts'])-> Twitteraccounts;
 
 			foreach ($accountsArray as $account) {
 
@@ -75,8 +80,73 @@ class socialWall extends Model {
 			return $query;
 		}
 	}
+
+	public static function makeRequestFB($accountsArray, $filterParams) {
+
+		$fb = new Facebook\Facebook([
+		  'app_id' => '146285462443655',
+		  'app_secret' => '5cd6cf0a1f8e1d0462eb2ed0485721e1',
+		  'default_graph_version' => 'v2.2',
+	  ]);
+
+		$fb->setDefaultAccessToken('146285462443655|tXbeHdXhRaR3RFaXlrsYHDevbXI');
+
+		$postsArray = [];
+		$responseArray = [];
+
+		foreach($accountsArray as $account) {
+
+			$obj = json_decode($fb->get('/' .$account. '/posts')->getGraphEdge());
+
+			array_push($postsArray, $obj);
+		}
+
+		foreach($postsArray as $value) {
+
+			foreach($value as $post) {
+
+				$fbObject = new stdClass();
+				
+				$post_text;
+
+				if(isset($post -> story)) {
+					
+					$post_text = $post -> story;
+				}
+				elseif(isset($post -> message)) {
+
+					$post_text = $post -> message;
+				}
+				else {
+
+					$post_text = 'No post text';
+				}
+
+				$media = json_decode($fb->get('/' .$post->id. '/attachments')->getGraphEdge());
+
+				$fbObject -> text = $post_text;
+				$fbObject -> id = 'FB' . $post->id;
+
+				if(isset($media[0]->media->image)) {
+
+					$fbObject -> img = $media[0]->media->image->src;
+				}
+
+				array_push($responseArray, $fbObject);
+			}
+		}
+
+		if(!empty($filterParams)) {
+			
+			return socialWall::filetrFunction($responseArray, $filterParams, 'Facebook');
+		}
+		else {
+
+			return $responseArray;
+		}
+	}
   
-  public static function makeRequest($query, $optionalParam) {
+  public static function makeRequestTW($query, $filterParams) {
 
   	$twitterBearerToken = "Bearer AAAAAAAAAAAAAAAAAAAAAANHvQAAAAAAabl2KF9Ig7CAgBZ6v2ahka2Kf5s%3DqTa8l2czzBRTUysN2wwpcAiSs1TV2XcGnGOABfayAfu1YySRxG";
 
@@ -90,9 +160,14 @@ class socialWall extends Model {
 
 		$responseObj = json_decode($response->getBody());
 
-		if(!empty($optionalParam)) {
+		foreach ($responseObj as $value) {
+
+			$value -> id = 'TW' . $value -> id;
+		}
+
+		if(!empty($filterParams)) {
 			
-			return socialWall::filetrFunction($responseObj, $optionalParam);
+			return socialWall::filetrFunction($responseObj, $filterParams, 'Twitter');
 		}
 		else {
 
@@ -103,22 +178,40 @@ class socialWall extends Model {
   public static function savePosts($array, $wallId) {
 
   	foreach ($array as $data) {
-  		
+
   		$posts = new twitterPosts();
+  		
+  		if(strpos($data -> id, 'FB') !== false) {
+
+  			$posts -> post_username = 'test';
+
+  			if(isset($data -> img)) {
+
+	  			$posts -> post_media = $data	-> img;
+	  		}
+	  		else {
+
+	  			$posts -> post_media = '';
+	  		}
+  		}
+  		else {
+
+  			$posts -> post_username = utf8_encode($data -> user -> screen_name);
+
+  			if(isset($data -> entities -> media)) {
+
+		  		$posts -> post_media = $data -> entities -> media[0]-> media_url;
+		  	}
+		  	else {
+
+		  		$posts -> post_media = '';
+		  	}
+  		}
+
 	  	$posts -> socialwall_id = $wallId;
 	  	$posts -> post_id = $data -> id;
-	  	$posts -> post_username = utf8_encode($data -> user -> screen_name);
 	  	$posts -> post_text = utf8_encode($data -> text);
 	  	$posts -> approved = '';
-
-	  	if(isset($data -> entities -> media)) {
-
-	  		$posts -> post_media = $data -> entities -> media[0]-> media_url;
-	  	}
-	  	else {
-
-	  		$posts -> post_media = '';
-	  	}
 
 	  	$posts -> save();	
 
@@ -126,25 +219,29 @@ class socialWall extends Model {
   	}
   }
 
-  public static function filetrFunction($responseObj, $filterParamsArray) {
+  public static function filetrFunction($responseObj, $filterParamsArray, $channel) {
 		
 		$responseObject = [];
+
 		foreach($responseObj as $key => $post) {
 
 			foreach($filterParamsArray as $filterParam) {
 
-				$found = strpos($post->text, $filterParam);
+				// $found = strpos($post->text, $filterParam);
 
-				if($found) {
+				if(strpos($post->text, $filterParam) !== false) {
 
 					array_push($responseObject, $post);
 				}
 			}
 		}
-		
+		if($channel ==='Facebook'){
+			// print_r($responseObject, '    ');
+			// print_r( $responseObj);
+		}
 		return $responseObject;
 	}
-
+ 
 
 // 			$reTweet = 'RT';
 

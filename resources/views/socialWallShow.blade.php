@@ -20,7 +20,7 @@
 		  <div class="post-header panel-heading">{{ $tweet -> post_username }}
 
 		  <div class="channel-logo-wrapper pull-right">
-		  	<img class="channel-logo" src="{{ asset('assets/twitterLogo_white.png') }}">
+		  	<img class="channel-logo" src="@if(substr($tweet -> post_id, 0, 2 ) === 'TW') {{ asset('assets/twitterLogo_blue.png') }} @elseif(substr( $tweet -> post_id, 0, 2 ) === 'FB') {{ asset('assets/facebookLogo.png') }} @endif">
 
 		  	<a class="approval" href="/approve" value="{{$tweet -> id}}">
 		  		<span class="icon-tick icon icon-checkmark"></span>
