@@ -64,30 +64,15 @@ class socialWallController extends Controller {
 
 		$this -> validate($request, [
 			'name' => 'required|unique:social_walls|min:4',
-			'mediachannels' => 'required'
+			'mediachannels' => 'required|array',
+			// 'Facebookaccounts' => 'required_if:mediachannels,0'
 		]);
 
-		$targetAccountsStringArray = [
-			'Facebookaccounts',
-			'Twitteraccounts',
-			'Vineaccounts',
-			'Instagramaccounts' 
-		];
-
-		$targetAccountsArray = [];
-
-		foreach($targetAccountsStringArray as $value) {
-
-			if(isset($request[$value])) {
-
-				$targetAccountsArray[$value] = explode(',', $request[$value]);
-			}
-		}
 
 		$name = $request['name'];
 		$media_channels = json_encode($request['mediachannels']);
 		$search_hashtags = $request['searchcriteria'];
-		$target_accounts = json_encode($targetAccountsArray);
+		$target_accounts = json_encode(socialWall::buildAccountsObj($request));
 		$theme = $request['themeselect'];
 		$results_order = $request['resultsorder'];
 		$filter_keywords = $request['keywordfilter'];
@@ -229,7 +214,8 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 			
 		$rules = [
 			'name' => 'required|min:4|unique:social_walls,name,' .$id,
-			'mediachannels' => 'required',
+			'mediachannels' => 'required|array',
+			// 'Facebookaccounts' => 'required_if:mediachannels,0'
 		];
             
     $validator = Validator::make($request, $rules);
@@ -237,8 +223,14 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
     if($validator->fails()) {
 
 	    $hashtags = explode(",", $request['searchcriteria']);
-	  	$target_accounts = explode(",", $request['targetaccounts']);
 	  	$filter_keywords = explode(",", $request['keywordfilter']);
+
+	  	$target_accounts = [];
+
+	  	foreach (json_decode($socialWall['target_accounts']) as $key => $value) {
+
+	  		$target_accounts[$key] = $value;
+	  	}
 
 	  	if (Input::get(['mediachannels']) != null) {
 
@@ -268,7 +260,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
     	$name = $request['name'];
 			$media_channels = json_encode($request['mediachannels']);
 			$search_hashtags = $request['searchcriteria'];
-			$target_accounts = $request['targetaccounts'];
+			$target_accounts = json_encode(socialWall::buildAccountsObj($request));
 			$theme = $request['themeselect'];
 			$results_order = $request['resultsorder'];
 			$filter_keywords = $request['keywordfilter'];

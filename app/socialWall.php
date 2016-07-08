@@ -97,6 +97,11 @@ class socialWall extends Model {
 		foreach($accountsArray as $account) {
 
 			$obj = json_decode($fb->get('/' .$account. '/posts')->getGraphEdge());
+			
+			foreach($obj as $key => $value) {
+
+				$value -> account = $account;
+			}
 
 			array_push($postsArray, $obj);
 		}
@@ -106,16 +111,18 @@ class socialWall extends Model {
 			foreach($value as $post) {
 
 				$fbObject = new stdClass();
-				
 				$post_text;
 
-				if(isset($post -> story)) {
-					
-					$post_text = $post -> story;
-				}
-				elseif(isset($post -> message)) {
+				$fbObject -> post_username = $post -> account;
+				
+
+				if(isset($post -> message)) {
 
 					$post_text = $post -> message;
+				}
+				elseif(isset($post -> story)) {
+
+					$post_text = $post -> story;
 				}
 				else {
 
@@ -183,7 +190,7 @@ class socialWall extends Model {
   		
   		if(strpos($data -> id, 'FB') !== false) {
 
-  			$posts -> post_username = 'test';
+  			$posts -> post_username = utf8_encode($data -> post_username);
 
   			if(isset($data -> img)) {
 
@@ -227,19 +234,36 @@ class socialWall extends Model {
 
 			foreach($filterParamsArray as $filterParam) {
 
-				// $found = strpos($post->text, $filterParam);
-
 				if(strpos($post->text, $filterParam) !== false) {
 
 					array_push($responseObject, $post);
 				}
 			}
 		}
-		if($channel ==='Facebook'){
-			// print_r($responseObject, '    ');
-			// print_r( $responseObj);
-		}
+
 		return $responseObject;
+	}
+
+	public static function buildAccountsObj($request) {
+
+		$targetAccountsStringArray = [
+			'Facebookaccounts',
+			'Twitteraccounts',
+			'Vineaccounts',
+			'Instagramaccounts' 
+		];
+
+		$targetAccountsArray = [];
+
+		foreach($targetAccountsStringArray as $value) {
+
+			if(isset($request[$value])) {
+
+				$targetAccountsArray[$value] = explode(',', $request[$value]);
+			}
+		}
+
+		return $targetAccountsArray;
 	}
  
 
