@@ -52,32 +52,37 @@ class socialWall extends Model {
 
 			$keywords = '';
 		}
-		if($channel === 'Facebook') {
+		if($channel === 'Facebook' || $channel ===  'Vine') {
 
 			return $testArray['filterParams'];
 		}
-		if(isset(json_decode($socialWall['target_accounts'])-> Twitteraccounts) && $channel === 'Twitter') {
+		if($channel === 'Twitter') {
 
-			$queryArray = [];
+			$TwitterAccounts = json_decode($socialWall['target_accounts']) -> Twitteraccounts;
 
-			$accountsArray = json_decode($socialWall['target_accounts'])-> Twitteraccounts;
+			if(!empty($TwitterAccounts[0])) {
+				
+				$queryArray = [];
 
-			foreach ($accountsArray as $account) {
+				$accountsArray = json_decode($socialWall['target_accounts'])-> Twitteraccounts;
 
-				$query = 'statuses/user_timeline.json?screen_name=' . $account . '&include_rts=false' . '&count=200';
+				foreach ($accountsArray as $account) {
 
-				array_push($testArray['queries'], $query);
+					$query = 'statuses/user_timeline.json?screen_name=' . $account . '&include_rts=false' . '&count=200';
+
+					array_push($testArray['queries'], $query);
+				}
+
+				array_push($testArray, $queryArray);
+
+				return $testArray;
 			}
+			else {
 
-			array_push($testArray, $queryArray);
+				$query = 'search/tweets.json?q=' . $keywords . $hashtags . $contentOrdering;
 
-			return $testArray;
-		}
-		else {
-
-			$query = 'search/tweets.json?q=' . $keywords . $hashtags . $contentOrdering;
-
-			return $query;
+				return $query;
+			}
 		}
 	}
 
@@ -134,9 +139,22 @@ class socialWall extends Model {
 				$fbObject -> text = $post_text;
 				$fbObject -> id = 'FB' . $post->id;
 
-				if(isset($media[0]->media->image)) {
+				if(isset($media[0] -> type) && $media[0] -> type === 'video_inline') {
 
-					$fbObject -> img = $media[0]->media->image->src;
+					$fbObject -> mediaUrl = $media[0] -> url;
+					$fbObject -> media_type = 'video';
+				}
+				else {
+
+					if(isset($media[0]->media->image)) {
+
+						$fbObject -> mediaUrl = $media[0]->media->image->src;
+						$fbObject -> media_type = 'image';
+					}
+					else {
+
+						$fbObject -> media_type = '';
+					}
 				}
 
 				array_push($responseArray, $fbObject);
@@ -167,9 +185,21 @@ class socialWall extends Model {
 
 		$responseObj = json_decode($response->getBody());
 
-		foreach ($responseObj as $value) {
+		if(isset($responseObj -> statuses)) {
+
+			if(empty($responseObj -> statuses)) {
+				
+				return $responseObj;
+			}
+			else {
+				$responseObj = $responseObj -> statuses;
+			}	
+		}
+
+		foreach($responseObj as $value) {
 
 			$value -> id = 'TW' . $value -> id;
+			$value -> media_type = 'image';
 		}
 
 		if(!empty($filterParams)) {
@@ -182,19 +212,96 @@ class socialWall extends Model {
 		}
   }
 
+  public static function makeRequestVI($accountsArray, $filterParams) {
+
+  	$vineClient = new GuzzleHttp\Client([
+			'base_uri' => 'https://api.vineapp.com/timelines/'
+		]);
+
+		$vineResponseArray = [];
+
+		if($accountsArray === null) {
+
+			foreach($filterParams as $key => $value) {
+				
+				$response = $vineClient->request('GET', 'tags/' . $value);
+
+				foreach(json_decode($response->getBody()) -> data -> records as $key => $post) {
+
+					$vineObject = new stdClass();
+					$vineObject -> id = 'VI'. $post -> postId;
+					$vineObject -> post_username = $post -> username;
+					$vineObject -> text = $post -> description;
+					$vineObject -> media_type = 'video';
+
+					if(isset($post -> videoDashUrl)) {
+
+						$vineObject -> mediaUrl = $post -> videoDashUrl;
+					}
+
+					array_push($vineResponseArray, $vineObject);
+				}
+			}
+
+			return $vineResponseArray;
+		}
+		else {
+
+			foreach($accountsArray as $key => $value) {
+				
+				$response = $vineClient->request('GET', 'users/' . $value);
+
+				$posts = json_decode($response->getBody()) -> data -> records;
+				
+				foreach($posts as $key => $post) {
+
+					$tagsString = '';
+
+					foreach($post -> entities as $tag) {
+							
+						$tagsString = $tagsString . $tag -> title;	
+					}
+
+					$vineObject = new stdClass();
+					$vineObject -> id = 'VI'. $post -> postId;
+					$vineObject -> post_username = $post -> username;
+					$vineObject -> text = $post -> description;
+					$vineObject -> media_type = 'video';
+					$vineObject -> tags = $tagsString;
+
+					if(isset($post -> videoDashUrl)) {
+
+						$vineObject -> mediaUrl = $post -> videoDashUrl;
+					}
+
+					array_push($vineResponseArray, $vineObject);
+				}
+			}
+
+			if(!empty($filterParams)) {
+				
+				return socialWall::filetrFunction($vineResponseArray, $filterParams, 'Vine');
+			}
+			else {
+
+				return $vineResponseArray;
+			}
+		}
+  }
+
   public static function savePosts($array, $wallId) {
 
   	foreach ($array as $data) {
 
-  		$posts = new twitterPosts();
+  		$posts = new posts();
   		
-  		if(strpos($data -> id, 'FB') !== false) {
+  		if(strpos($data -> id, 'FB') !== false || strpos($data -> id, 'VI') !== false) {
 
   			$posts -> post_username = utf8_encode($data -> post_username);
 
-  			if(isset($data -> img)) {
+  			if(isset($data -> mediaUrl) && strlen($data -> mediaUrl) < 250) {
 
-	  			$posts -> post_media = $data	-> img;
+	  			$posts -> post_media = $data -> mediaUrl;
 	  		}
 	  		else {
 
@@ -207,7 +314,7 @@ class socialWall extends Model {
 
   			if(isset($data -> entities -> media)) {
 
-		  		$posts -> post_media = $data -> entities -> media[0]-> media_url;
+		  		$posts -> post_media = $data -> entities -> media[0] -> media_url;
 		  	}
 		  	else {
 
@@ -215,8 +322,14 @@ class socialWall extends Model {
 		  	}
   		}
 
+  		if(strlen($data -> text) > 500) {
+
+  			$data -> text = substr($data -> text, 0, 500) . '...';
+  		}
+
 	  	$posts -> socialwall_id = $wallId;
 	  	$posts -> post_id = $data -> id;
+	  	$posts -> media_type = $data -> media_type;
 	  	$posts -> post_text = utf8_encode($data -> text);
 	  	$posts -> approved = '';
 
@@ -234,7 +347,16 @@ class socialWall extends Model {
 
 			foreach($filterParamsArray as $filterParam) {
 
-				if(strpos($post->text, $filterParam) !== false) {
+				if($channel === 'Vine') {
+					
+					$hayStack = $post -> tags;
+				}
+				else {
+
+					$hayStack = $post -> text;
+				}
+
+				if(strpos($hayStack, $filterParam) !== false) {
 
 					array_push($responseObject, $post);
 				}

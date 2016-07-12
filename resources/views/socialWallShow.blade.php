@@ -17,10 +17,12 @@
 	@foreach($data as $tweet)
 
 		<div class="grid-item panel panel-info col-lg-3">
-		  <div class="post-header panel-heading">{{ $tweet -> post_username }}
+		  <div class="post-header panel-heading">
+
+		  <p class="post-header-username">{{ $tweet -> post_username }}</p>
 
 		  <div class="channel-logo-wrapper pull-right">
-		  	<img class="channel-logo" src="@if(substr($tweet -> post_id, 0, 2 ) === 'TW') {{ asset('assets/twitterLogo_blue.png') }} @elseif(substr( $tweet -> post_id, 0, 2 ) === 'FB') {{ asset('assets/facebookLogo.png') }} @endif">
+		  	<img class="channel-logo" src="@if(substr($tweet -> post_id, 0, 2 ) === 'TW') {{ asset('assets/twitterLogo_blue.png') }} @elseif(substr( $tweet -> post_id, 0, 2 ) === 'FB') {{ asset('assets/facebookLogo.png') }} @elseif(substr( $tweet -> post_id, 0, 2 ) === 'VI') {{ asset('assets/vineLogo.png') }} @endif">
 
 		  	<a class="approval" href="/approve" value="{{$tweet -> id}}">
 		  		<span class="icon-tick icon icon-checkmark"></span>
@@ -38,7 +40,16 @@
 
 		  @if($tweet -> post_media != '')
 
-		  	<img class="post-image-custom" src="{{ $tweet -> post_media }}">
+		  	 @if($tweet -> media_type === 'video')
+
+		  	 	<video class="post-video" controls="true">
+		  	 		<source src="{{ $tweet -> post_media }}">
+		  	 	</video>
+
+		  	 @else
+
+		  		<img class="post-image-custom" src="{{ $tweet -> post_media }}">
+		  	@endif
 		  @endif
 
 		</div>

@@ -6,7 +6,7 @@
 
 	</br>
 
-  @foreach ($users as $user)
+  @foreach($users as $user)
 
     <ul class="list-group">
     	<li class="list-group-item">Username: <strong> {{ $user->username }} </strong></li>

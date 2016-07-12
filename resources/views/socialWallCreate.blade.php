@@ -52,6 +52,7 @@
         <label class="block" for="themeselect"> Select Theme </label>
 
         <select id="themeselect" name="themeselect" class="form-control" value="{{ Request::old('themeselect')}}">
+          <option value="Default Theme"> Default Theme </option>
           @foreach ($themes as $theme)
             <option value="{{ $theme -> name }}"> {{ $theme -> name }} </option>
           @endforeach

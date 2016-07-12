@@ -5822,6 +5822,12 @@ body, .tile-wrapper, .post-container {
   width: 40px;
   max-width: 50px; }
 
+.post-header-username {
+  width: 57%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin: 0; }
+
 .channel-logo-wrapper {
   position: absolute;
   height: 100%;
@@ -5830,6 +5836,10 @@ body, .tile-wrapper, .post-container {
 
 .post-header {
   position: relative; }
+
+.post-video {
+  max-width: 100%;
+  max-height: 100%; }
 
 a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   text-decoration: none;
@@ -5906,7 +5916,7 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   text-shadow: 0.5px #333;
   color: #fff; }
 
-.post-image-wrapper {
+.post-image-wrapper, .post-video-wrapper {
   height: 70%;
   width: 80%;
   position: relative;

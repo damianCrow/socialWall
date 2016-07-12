@@ -76,6 +76,10 @@ $(document).ready(function() {
 			case 'TW': src = '../../assets/twitterLogo_blue.png';
 
 			break;
+
+			case 'VI': src = '../../assets/vineLogo.png';
+
+			break;
 		}
 
 		return src;
@@ -89,7 +93,13 @@ $(document).ready(function() {
 
 		if(post.post_media !== "") {
 
-			element += '<div class="post-image-wrapper"> <img class="post-image" src="' + post.post_media + '"></div>';
+			if(post.media_type === 'image') {
+
+				element += '<div class="post-image-wrapper"> <img class="post-image" src="' + post.post_media + '"></div>';
+			}
+			else {
+				element += '<div class="post-video-wrapper"> <video class="post-video" controls="true"><source src="' + post.post_media + '""></video></div>';
+			}
 		}
 		else {
 
@@ -117,7 +127,6 @@ $(document).ready(function() {
 	function galleryView(i) {
 
 	  $('body').html(content[i]);
-	  // $('.channel-logo').attr('src', assignLogo(content[i]));
 		$('.post-wrapper').fadeTo(1300, 1);
 		$('.post-container').css({
 			'height': window.innerHeight
@@ -125,7 +134,7 @@ $(document).ready(function() {
 		$('.post-wrapper').css({
 			'transform': 'translateY(-50%) translateX(-50%)',
 		});
-		$('.post-image').css({
+		$('.post-image, .post-video').css({
 			'max-height': window.innerHeight / 10 * 6,
 			'max-width': '100%',
 		});
@@ -155,7 +164,9 @@ $(document).ready(function() {
 		}
 
 		var fadeOut = setTimeout(function() {
+
 			$('.post-wrapper').fadeTo(1000, 0);
+
 		}, delay - 1000);
 
 		var showNextPost = 	setTimeout(function() {
@@ -202,6 +213,31 @@ $(document).ready(function() {
 				galleryView(i);
 			}
 		});
+
+		if($('.post-wrapper').find($('.post-video')).is('video')) {
+
+			clearTimeout(showNextPost);
+			clearTimeout(fadeOut);
+
+			setTimeout(function() {
+
+				$('.post-wrapper').find($('.post-video'))[0].play();
+
+			}, 1000);
+			
+			$('.post-wrapper').find($('.post-video'))[0].onended = function(e) {
+
+				if(i < content.length - 1) {
+
+					timer(1000, galleryView, i + 1);
+				}
+				else {
+
+					i = 0;
+					timer(1000, galleryView, i);
+				}
+			}
+		}
 	}
 
 	function tileView() {
@@ -228,9 +264,18 @@ $(document).ready(function() {
 
 			if(data[i].post_media !== "") {
 
-				$(tile).css({
-					'background-image': 'url(' + data[i].post_media + ')'
-				});
+				if(data[i].media_type === 'image') {
+
+					$(tile).css({
+						'background-image': 'url(' + data[i].post_media + ')'
+					});
+				}
+				else {
+
+					var video = '<div class="post-video-wrapper"> <video class="post-video" controls="true"><source src="' + data[i].post_media + '"></source></video></div>';
+
+					$(tile).append(video);			
+				}	
 			}
 			else {
 
@@ -278,10 +323,10 @@ $(document).ready(function() {
 
 					return func.apply(this, argument);
 				}
-				// if (typeof argument === 'number') {
+				if(typeof argument === 'number') {
 
-				// 	return func(argument); 
-				// }
+					return func(argument); 
+				}
 	  	}
 	  	else {
 
@@ -304,7 +349,23 @@ $(document).ready(function() {
 			'z-index': 2
 		});
 
-		timer(delay, smallTileTransition, [randomNumber, position]);
+		if($(tileArray[randomNumber]).find($('.post-video')).is('video')) {
+
+			setTimeout(function() {
+
+				$(tileArray[randomNumber]).find($('.post-video'))[0].play();
+
+			}, 1000);
+			
+			$(tileArray[randomNumber]).find($('.post-video'))[0].onended = function(e) {
+
+			  timer(1500, smallTileTransition, [randomNumber, position]);
+			}
+		}
+		else {
+
+			timer(delay, smallTileTransition, [randomNumber, position]);
+		}
 	}
 
 	function smallTileTransition(index, position) {

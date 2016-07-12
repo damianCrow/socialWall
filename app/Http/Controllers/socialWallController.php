@@ -5,7 +5,7 @@ namespace socialwall\Http\Controllers;
 use Illuminate\Http\Request;
 use socialwall\Http\Requests;
 use socialwall\socialWall;
-use socialwall\twitterPosts;
+use socialwall\posts;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -45,7 +45,7 @@ class socialWallController extends Controller {
 
   public function approvePost() {
 
-  	$post = twitterPosts::find($_GET['id']);
+  	$post = posts::find($_GET['id']);
 
   	$post -> approved = 1;
 
@@ -53,7 +53,7 @@ class socialWallController extends Controller {
   }
   public function disApprovePost() {
   	
-  	$post = twitterPosts::find($_GET['id']);
+  	$post = posts::find($_GET['id']);
 
   	$post -> approved = 0;
 
@@ -97,9 +97,9 @@ class socialWallController extends Controller {
 
   public function show($id) {
 
-		if(Input::get('page') || twitterPosts::where('socialwall_id', '=', $id)->exists()) {
+		if(Input::get('page') || posts::where('socialwall_id', '=', $id)->exists()) {
 			
-			$data = twitterPosts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
+			$data = posts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
@@ -134,11 +134,25 @@ class socialWallController extends Controller {
 
 					$this -> populateResponseArray(socialWall::makeRequestFB($accounts, $filterParams), $id);
 				}
+				if($channel === 'Vine') {
+
+					$accounts = json_decode($socialWall['target_accounts']) -> Vineaccounts;
+					$filterParams = socialWall::buildQuery($socialWall, $channel);
+
+					if(!empty($accounts[0])) {
+						
+						$this -> populateResponseArray(socialWall::makeRequestVI($accounts, $filterParams), $id);
+					}
+					else {
+
+						$this -> populateResponseArray(socialWall::makeRequestVI(null, $filterParams), $id);
+					}
+				}
 			}
 
 echo ' after ' . Count($this->responseArray) . ' Tweets';
 		
-	    $data = twitterPosts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
+	    $data = posts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
@@ -299,7 +313,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 
   	$theme = theme::where('name', '=', $themeName) -> get();
 
-  	$data = twitterPosts::where('socialwall_id', '=', $id) 
+  	$data = posts::where('socialwall_id', '=', $id) 
   		-> where('approved', '=', '1') -> get();
 
   	if(count($data) < 1) {

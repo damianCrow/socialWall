@@ -46,14 +46,18 @@ $(document).ready(function() {
       
       if(!$('#' + $(option).val()).length) {
         
-        var Accounts = '<div id="' + $(option).val() + '" class="input-group vertical-spacer col-lg-3 col-sm-6">'
-          + '<label for="' + $(option).val() + 'accounts"> Add ' + $(option).val() + ' Target Accounts </label>'
-          + '<input class="form-control" id="' + $(option).val() + 'accounts" type="text" name="' + $(option).val() + 'accounts">'
-        + '</div>'
+        var Accounts = '<div id="' + $(option).val() + '"class="input-group vertical-spacer col-lg-3 col-sm-6"><label for="' + $(option).val() + 'accounts"> Add ' + $(option).val() + ' Target Accounts </label><input class="form-control" id="' + $(option).val() + 'accounts" type="text" name="' + $(option).val() + 'accounts"></div>';
         
         $(Accounts).insertBefore($('.submit-button'));
-        
-        createTagsInput($('#' + $(option).val() + 'accounts'));
+
+        if($(option).val() === 'Vine') {
+
+          createTagsInput($('#' + $(option).val() + 'accounts'), 'Add Account NUMBERS');
+        }
+        else {
+
+          createTagsInput($('#' + $(option).val() + 'accounts'), 'Add Account NAMES');
+        }
       }
       if($('#' + $(option).val()).length) {
 
@@ -66,16 +70,29 @@ $(document).ready(function() {
     }
   });
 
-  createTagsInput('#targetaccounts');
-  createTagsInput('#searchcriteria');
-  createTagsInput('#keywordfilter'); 
+  createTagsInput('#searchcriteria', 'Add Hashtag');
+  createTagsInput('#keywordfilter', 'Add Keyword'); 
 
-  function createTagsInput(ele) {
+  function createTagsInput(ele, defaultText) {
 
     $(ele).tagsInput({
-      'defaultText': 'Add Tag',
+      'defaultText': defaultText,
       'placeholderColor' : '#333333',
       'height': 'auto',
+      'width': '100%'
+    });
+
+    var elementSelector;
+
+    if(ele.selector !== undefined) {
+
+      elementSelector = ele.selector;
+    }
+    else {
+
+      elementSelector = ele;
+    }
+    $(elementSelector + '_tag').css({
       'width': '100%'
     });
   }
