@@ -1,15 +1,5 @@
 $(document).ready(function() {
 
-	// $('.grid').isotope({
-	// 	  itemSelector: '.tile',
-	// 	  packery: {
-	// 	  	horizontal: true,
-	// 	  	stamp: '.stamp',
-	// 	  	percentPosition: true
-	// 	  }
-	// 	});
-	
-
 	var content = window.opener.content;
 	var data = window.opener.data.data;
 	var theme = window.opener.data.theme;
@@ -63,6 +53,40 @@ $(document).ready(function() {
 		});
 	}
 
+	var fbVideoPlayersArray = [];
+
+	window.fbAsyncInit = function() {
+
+	  FB.init({
+	    appId      : '146285462443655',
+	    xfbml      : true,
+	    version    : 'v2.6'
+	  });
+	   
+	  FB.Event.subscribe('xfbml.ready', function(msg) {
+
+		  if(msg.type === 'video') {
+		     
+		     fbVideoPlayersArray.push([msg.id, msg.instance]);
+		  }
+		});
+	};
+
+	function createFBVideo(src, postId) {
+
+		(function(d, s, id) {
+	    var js, fjs = d.getElementsByTagName(s)[0];
+	    if (d.getElementById(id)) return;
+	    js = d.createElement(s); js.id = id;
+	    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
+	    fjs.parentNode.insertBefore(js, fjs);
+	  }(document, 'script', 'facebook-jssdk'));
+
+	  var FBVideo = '<div class="post-video-wrapper"><div id="' + postId + '" class="fb-video post-video" data-href="' + src +'"data-show-text="false"></div></div>';
+
+	 	return FBVideo;
+ 	}
+
 	function assignLogo(post) {
 
 		var src;
@@ -97,6 +121,10 @@ $(document).ready(function() {
 
 				element += '<div class="post-image-wrapper"> <img class="post-image" src="' + post.post_media + '"></div>';
 			}
+			else if(post.post_id.substring(0, 2) === 'FB') {
+
+				element += createFBVideo(post.post_media, post.post_id);
+			}
 			else {
 				element += '<div class="post-video-wrapper"> <video class="post-video" controls="true"><source src="' + post.post_media + '""></video></div>';
 			}
@@ -125,6 +153,38 @@ $(document).ready(function() {
 	}
 
 	function galleryView(i) {
+
+		function NextPost() {
+
+			clearTimeout(showNextPost);
+			clearTimeout(fadeOut);
+
+			if(i < content.length - 1) {
+
+				galleryView(i + 1);
+			}
+			else {
+
+				i = 0;
+				galleryView(i);
+			}
+		}
+
+		function previousPost() {
+
+			clearTimeout(showNextPost);
+			clearTimeout(fadeOut);
+
+			if(i === 0) {
+
+				i = content.length - 1;
+				galleryView(i);
+			}
+			else {
+
+				galleryView(i - 1);
+			}
+		}
 
 	  $('body').html(content[i]);
 		$('.post-wrapper').fadeTo(1300, 1);
@@ -171,47 +231,18 @@ $(document).ready(function() {
 
 		var showNextPost = 	setTimeout(function() {
 
-			if(i === content.length - 1) {
+			NextPost();
 
-				i = 0;
-				galleryView(i);
-			}
-			else {
-
-				galleryView(i + 1);
-			}
 		}, delay);
 
 		$('#previous-post').click(function() {
 
-			clearTimeout(showNextPost);
-			clearTimeout(fadeOut);
-
-			if(i === 0) {
-
-				i = content.length - 1;
-				galleryView(i);
-			}
-			else {
-
-				galleryView(i - 1);
-			}
+			previousPost();
 		});
 
 		$('#next-post').click(function() {
 
-			clearTimeout(showNextPost);
-			clearTimeout(fadeOut);
-
-			if(i < content.length - 1) {
-
-				galleryView(i + 1);
-			}
-			else {
-
-				i = 0;
-				galleryView(i);
-			}
+			NextPost();
 		});
 
 		if($('.post-wrapper').find($('.post-video')).is('video')) {
@@ -222,22 +253,29 @@ $(document).ready(function() {
 			setTimeout(function() {
 
 				$('.post-wrapper').find($('.post-video'))[0].play();
+				
 
-			}, 1000);
+			}, 1500);
 			
 			$('.post-wrapper').find($('.post-video'))[0].onended = function(e) {
 
-				if(i < content.length - 1) {
-
-					timer(1000, galleryView, i + 1);
-				}
-				else {
-
-					i = 0;
-					timer(1000, galleryView, i);
-				}
-			}
+				timer(500, NextPost);
+			};
 		}
+		else if($('.post-wrapper').find($('.fb-video')).length > 0) {
+
+			clearTimeout(showNextPost);
+			clearTimeout(fadeOut);
+
+			setTimeout(function() {
+
+				playFbVideo(500, 10000, $('.post-wrapper').find($('.fb-video'))[0].id, function() {
+
+					timer(500, NextPost);
+				});
+			}, 1500)
+		}
+		else {};
 	}
 
 	function tileView() {
@@ -269,6 +307,10 @@ $(document).ready(function() {
 					$(tile).css({
 						'background-image': 'url(' + data[i].post_media + ')'
 					});
+				}
+				else if(data[i].post_id.substring(0, 2) === 'FB') {
+
+					 $(tile).append(createFBVideo(data[i].post_media, data[i].post_id));
 				}
 				else {
 
@@ -306,12 +348,14 @@ $(document).ready(function() {
 
 			if(count === data.length - 1) {
 
-				timer(delay, bigTileTransition);
+				timer(3000, bigTileTransition);
 			}
 		}
 	}
 
 	var tileArray = document.querySelectorAll('.tile');
+
+// ADD DYNAMIC DELAY AND ARGUMENTS TO ANY FUNCTION \\	
 
 	function timer(wait, func, argument) {
 
@@ -330,26 +374,50 @@ $(document).ready(function() {
 	  	}
 	  	else {
 
-	  		return func.apply(null); 
+	  		return func(); 
 	  	}
 	   	
 	 	}, wait);
 	}
+
+// FIND AND RETURN THE CORRECT PLAYER FROM THE fbVideoPlayersArray \\
+
+	function findPlayer(array, videoId) {
+
+		for(var i = 0; i < array.length; i++) {
+
+			if(videoId === array[i][0]) {
+
+				var player = array[i][1]; 
+			}
+		}
+
+		return player;
+	}
+
+// TRANSITION TILE TO BIGGER SIZE AND CENTER IT IN VIEW. IF THERE IS A VIDEO IN THE BIG TILE, PLAY IT \\
 
 	function bigTileTransition() {
 		
 		var randomNumber = Math.floor((Math.random() * tileArray.length - 1) + 1);
 
 		var position = $(tileArray[randomNumber]).position();
-	
-		tileArray[randomNumber].classList.add('big-tile');
+		
 		tileArray[randomNumber].classList.remove('tile');
+		tileArray[randomNumber].classList.add('big-tile');
 		$(tileArray[randomNumber]).css({
 			'height': window.innerHeight,
 			'z-index': 2
 		});
 
-		if($(tileArray[randomNumber]).find($('.post-video')).is('video')) {
+		if($(tileArray[randomNumber]).find($('.fb-video')).length > 0) {
+
+			playFbVideo(1500, 10000, $(tileArray[randomNumber]).find($('.fb-video'))[0].id, function() {
+
+				timer(1000, smallTileTransition, [randomNumber, position]);
+			});
+		}
+		else if($(tileArray[randomNumber]).find($('.post-video')).is('video')) {
 
 			setTimeout(function() {
 
@@ -357,16 +425,46 @@ $(document).ready(function() {
 
 			}, 1000);
 			
-			$(tileArray[randomNumber]).find($('.post-video'))[0].onended = function(e) {
+			$(tileArray[randomNumber]).find($('.post-video'))[0].onended = function() {
 
-			  timer(1500, smallTileTransition, [randomNumber, position]);
-			}
+			  return timer(1000, smallTileTransition, [randomNumber, position]);
+			};
 		}
 		else {
 
-			timer(delay, smallTileTransition, [randomNumber, position]);
+			return timer(delay, smallTileTransition, [randomNumber, position]);
 		}
 	}
+
+	function playFbVideo(playDelay, playTime, videoId, callBack) {
+
+		if(fbVideoPlayersArray.length > 1) {
+
+			var player = findPlayer(fbVideoPlayersArray, videoId);
+		}
+		else {
+
+			var player = fbVideoPlayersArray[0][1];
+		}
+		if(player !== undefined) {
+
+			setTimeout(function() {
+
+				player.play();
+
+			}, playDelay)
+
+			setTimeout(function() {
+
+				player.pause();
+
+				callBack();
+
+			}, playTime)
+		}
+	}
+
+// TRANSITION TILE BACK TO ORIGINAL SIZE \\
 
 	function smallTileTransition(index, position) {
 
@@ -383,14 +481,16 @@ $(document).ready(function() {
 		tileArray[index].classList.add('tile');
 		$(tileArray[index]).css({'height': window.innerHeight / 4});
 
-		timer(1200, bigTileTransition);
-
 		setTimeout(function() {
+
 			$(tileArray[index]).css({
 				'z-index': 1,
 				'left': '',
 				'top': ''
 			});
+
+			timer(200, bigTileTransition);
+
 		}, 1000);
 	}
 });

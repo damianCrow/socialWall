@@ -9,6 +9,7 @@ use Session;
 use Config;
 use Facebook;
 use stdClass;
+use Validator;
 
 class socialWall extends Model {
 
@@ -293,32 +294,32 @@ class socialWall extends Model {
 
   	foreach ($array as $data) {
 
-  		$posts = new posts();
+  		$post = new posts();
   		
   		if(strpos($data -> id, 'FB') !== false || strpos($data -> id, 'VI') !== false) {
 
-  			$posts -> post_username = utf8_encode($data -> post_username);
+  			$post -> post_username = utf8_encode($data -> post_username);
 
   			if(isset($data -> mediaUrl) && strlen($data -> mediaUrl) < 250) {
 
-	  			$posts -> post_media = $data -> mediaUrl;
+	  			$post -> post_media = $data -> mediaUrl;
 	  		}
 	  		else {
 
-	  			$posts -> post_media = '';
+	  			$post -> post_media = '';
 	  		}
   		}
   		else {
 
-  			$posts -> post_username = utf8_encode($data -> user -> screen_name);
+  			$post -> post_username = utf8_encode($data -> user -> screen_name);
 
   			if(isset($data -> entities -> media)) {
 
-		  		$posts -> post_media = $data -> entities -> media[0] -> media_url;
+		  		$post -> post_media = $data -> entities -> media[0] -> media_url;
 		  	}
 		  	else {
 
-		  		$posts -> post_media = '';
+		  		$post -> post_media = '';
 		  	}
   		}
 
@@ -327,15 +328,28 @@ class socialWall extends Model {
   			$data -> text = substr($data -> text, 0, 500) . '...';
   		}
 
-	  	$posts -> socialwall_id = $wallId;
-	  	$posts -> post_id = $data -> id;
-	  	$posts -> media_type = $data -> media_type;
-	  	$posts -> post_text = utf8_encode($data -> text);
-	  	$posts -> approved = '';
+	  	$post -> socialwall_id = $wallId;
+	  	$post -> post_id = $data -> id;
+	  	$post -> media_type = $data -> media_type;
+	  	$post -> post_text = utf8_encode($data -> text);
+	  	$post -> approved = '';
 
-	  	$posts -> save();	
+	  	$rules = ['post_id' => 'unique:posts'];
 
-	  	Session::flash('message', 'You have successfully saved posts for socialWall '. $wallId);
+			$validator = Validator::make(get_object_vars($post)['attributes'], $rules);
+
+			if($validator -> passes()) {
+
+		  	$post -> save();	
+
+		  	Session::flash('message', 'You have successfully saved posts for socialWall '. $wallId);
+		  }
+		  else {
+
+		  	$post -> delete();
+
+		  	Session::flash('message', 'post '. $post->post_id . 'Deleted');
+		  }
   	}
   }
 

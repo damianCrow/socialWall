@@ -99,7 +99,9 @@ class socialWallController extends Controller {
 
 		if(Input::get('page') || posts::where('socialwall_id', '=', $id)->exists()) {
 			
-			$data = posts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
+			$data = posts::orderBy(DB::raw('RAND()'))
+				->where('socialwall_id', '=', $id)
+				->paginate(50);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
@@ -152,7 +154,9 @@ class socialWallController extends Controller {
 
 echo ' after ' . Count($this->responseArray) . ' Tweets';
 		
-	    $data = posts::orderBy(DB::raw('RAND()'))->where('socialwall_id', '=', $id)->paginate(50);
+	    $data = posts::orderBy(DB::raw('RAND()'))
+		    ->where('socialwall_id', '=', $id)
+		    ->paginate(50);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);

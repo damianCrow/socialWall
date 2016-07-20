@@ -5,7 +5,7 @@ Route::group(['middleware' => ['web']], function() {
 	Route::get('/', function() {
 
     Auth::logout();
-    DB::table('twitter_posts')->delete();
+    DB::table('posts') -> delete();
 
     return view('welcome');
 	});

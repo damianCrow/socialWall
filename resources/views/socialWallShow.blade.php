@@ -40,13 +40,41 @@
 
 		  @if($tweet -> post_media != '')
 
-		  	 @if($tweet -> media_type === 'video')
+		  	@if($tweet -> media_type === 'video')
 
-		  	 	<video class="post-video" controls="true">
-		  	 		<source src="{{ $tweet -> post_media }}">
-		  	 	</video>
+		  	 	@if(substr($tweet -> post_id, 0, 2) === 'FB')
 
-		  	 @else
+		  	 		<div id="{{ $tweet -> post_id }}" class="post-video"></div>
+
+		  	 		<script type="text/javascript">
+						  	 		
+						  $('#{{ $tweet -> post_id }}').append(createFBVideo('{{ $tweet -> post_media }}'));
+						  
+							function createFBVideo(src) {
+
+								(function(d, s, id) {
+							    var js, fjs = d.getElementsByTagName(s)[0];
+							    if (d.getElementById(id)) return;
+							    js = d.createElement(s); js.id = id;
+							    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
+							    fjs.parentNode.insertBefore(js, fjs);
+							  }(document, 'script', 'facebook-jssdk'));
+
+							  var FBVideo = '<div class="fb-video post-video" data-href="' + src +'"data-show-text="false"></div>';
+
+							 	return FBVideo;
+						 	}
+
+						</script>
+		  	 		
+		  	 	@else
+
+		  	 		<video class="post-video" controls="true">
+			  	 		<source src="{{ $tweet -> post_media }}">
+			  	 	</video>
+		  	 	@endif
+
+		  	@else
 
 		  		<img class="post-image-custom" src="{{ $tweet -> post_media }}">
 		  	@endif
@@ -56,4 +84,7 @@
 
 	@endforeach
 
+
+
 @endsection
+
