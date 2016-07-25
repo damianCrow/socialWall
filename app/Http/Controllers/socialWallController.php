@@ -43,17 +43,17 @@ class socialWallController extends Controller {
   		->with('themes', $themes);
   }
 
-  public function approvePost() {
+  public function approvePost($id) {
 
-  	$post = posts::find($_GET['id']);
+  	$post = posts::find($id);
 
   	$post -> approved = 1;
 
   	$post -> save();
   }
-  public function disApprovePost() {
+  public function disApprovePost($id) {
   	
-  	$post = posts::find($_GET['id']);
+  	$post = posts::find($id);
 
   	$post -> approved = 0;
 
@@ -101,7 +101,7 @@ class socialWallController extends Controller {
 			
 			$data = posts::orderBy(DB::raw('RAND()'))
 				->where('socialwall_id', '=', $id)
-				->paginate(50);
+				->paginate(20);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
@@ -156,7 +156,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 		
 	    $data = posts::orderBy(DB::raw('RAND()'))
 		    ->where('socialwall_id', '=', $id)
-		    ->paginate(50);
+		    ->paginate(20);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);

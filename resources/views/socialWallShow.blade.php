@@ -24,11 +24,11 @@
 		  <div class="channel-logo-wrapper pull-right">
 		  	<img class="channel-logo" src="@if(substr($tweet -> post_id, 0, 2 ) === 'TW') {{ asset('assets/twitterLogo_blue.png') }} @elseif(substr( $tweet -> post_id, 0, 2 ) === 'FB') {{ asset('assets/facebookLogo.png') }} @elseif(substr( $tweet -> post_id, 0, 2 ) === 'VI') {{ asset('assets/vineLogo.png') }} @endif">
 
-		  	<a class="approval" href="/approve" value="{{$tweet -> id}}">
+		  	<a class="approval" href="/approve/{{$tweet -> id}}" value="{{$tweet -> id}}">
 		  		<span class="icon-tick icon icon-checkmark"></span>
 		  	</a>
 
-		  	<a class="approval" href="/disapprove" value="{{$tweet -> id}}">
+		  	<a class="approval" href="/disapprove/{{$tweet -> id}}" value="{{$tweet -> id}}">
 			  	<span value="0" class="icon icon-close icon-cross"></span>
 		  	</a>
 
@@ -84,7 +84,35 @@
 
 	@endforeach
 
-
-
 @endsection
 
+@section('scripts')
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-infinitescroll/2.1.0/jquery.infinitescroll.min.js">
+</script>
+
+<script type="text/javascript">
+
+(function(){
+
+  $('#content-wrapper').infinitescroll({
+    loading : {
+	    finishedMsg: '<div class="scroll-alert alert-info alert"><h3>Congratulations! You have seen all the posts</h3></div>',
+	    msgText: '<div class="scroll-alert alert-info alert"><h3>Loading more posts...</h3></div>',
+	    img: "",
+	    debug: true,
+	    animate: true
+	  },
+    navSelector : "#header-wrapper .cta-wrapper .pagination",
+    nextSelector : "#header-wrapper .cta-wrapper .pagination li.active + li a",
+    itemSelector : "#content-wrapper div.grid-item"
+  },
+  function(newElements){
+
+   	$('#content-wrapper').isotope('appended', newElements);
+  });
+})();
+
+</script>
+
+@endsection

@@ -2,45 +2,47 @@
 
 $(document).ready(function() {
 
-	$(window).on('load', function(){
+	$(window).on('load scroll', function(){
 
 		$('.grid').isotope({
 		  itemSelector: '.grid-item',
 		  packery: {
-		  	stamp: '.stamp',
 		  	percentPosition: true
 		  }
 		});
 	});
 
-	$(window).on('hashchange', function(){
+	$('#content-wrapper').on('click', '.approval', function(evt) {
 
-    $('.grid').isotope();
-	});
-
-	$('.approval').click(function(evt) {
-
+    var element = this;
 	  evt.preventDefault();
 
-	  if ($(this).attr('href') === '/approve') {
-
-	  	$(this).parents().eq(2).find('.panel-body').removeClass('disapproved').toggleClass('approved');
-	  }
-	  if ($(this).attr('href') === '/disapprove') {
-
-	  	$(this).parents().eq(2).find('.panel-body').removeClass('approved').toggleClass('disapproved');
-	  }
-
 	  $.ajax({
-	      method: 'GET',
-	      url: $(this).attr('href'),
-	      data: {id:$(this).attr('value')}
+      method: 'GET',
+      url: $(this).attr('href'),
+      success: function() {
+
+        if($(element).attr('href') === '/approve/' + $(element).attr('value')) {
+
+          $(element).parents().eq(2).find('.panel-body').removeClass('disapproved').toggleClass('approved');
+        }
+
+        if($(element).attr('href') === '/disapprove/' + $(element).attr('value')) {
+
+          $(element).parents().eq(2).find('.panel-body').removeClass('approved').toggleClass('disapproved');
+        }
+      },
+      error: function(error) {
+
+        console.log(error);
+      }
 	  });
 	});
 
 // SOCIAL WALL MULTISELECT AND TAGSINPUT CODE \\
 
   $('#mediachannels').multiselect({
+
     enableClickableOptGroups: true,
     onChange: function(option, checked) {
       

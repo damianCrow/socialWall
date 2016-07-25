@@ -22,7 +22,7 @@
   	
   	<div id="wrapper" class="container-fluid">
 
-      <div class="row-fluid col-md-10 col-md-offset-1">
+      <div id="header-wrapper" class="row-fluid col-md-10 col-md-offset-1">
 
         @if (Session::has('message'))
           <div class="alert alert-success fade in">
@@ -38,7 +38,7 @@
         @yield('header')
       </div>
 
-      <div class="grid row-fluid col-md-10 col-md-offset-1">
+      <div id="content-wrapper" class="grid row-fluid col-md-10 col-md-offset-1">
 
         @yield('content')
 

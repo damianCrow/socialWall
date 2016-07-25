@@ -5847,26 +5847,30 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   outline: none;
   color: transparent; }
 
-.panel-body.disapproved:before, .panel-body.approved:after {
-  content: "DISAPPROVED";
-  font-size: 1.5em;
-  color: #d9534f;
-  position: absolute;
-  top: 25px;
-  left: 15px; }
-
-.panel-body.approved:after {
-  content: "APPROVED";
-  color: #32BD32; }
+.panel-body {
+  word-wrap: break-word; }
+  .panel-body.disapproved:before, .panel-body.approved:after {
+    content: "DISAPPROVED";
+    font-size: 1.5em;
+    color: #d9534f;
+    position: absolute;
+    top: 25px;
+    left: 15px; }
+  .panel-body.approved:after {
+    content: "APPROVED";
+    color: #32BD32; }
 
 .cta-wrapper {
-  min-height: 70px; }
-
-.header-btn-right {
-  position: absolute;
-  right: 15px;
-  margin: 20px 0;
-  display: inline-block; }
+  min-height: 55px;
+  margin-top: 0; }
+  .cta-wrapper .pagination {
+    display: none; }
+  .cta-wrapper .header-btn-right {
+    position: absolute;
+    display: inline-block;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%); }
 
 .icon {
   height: 16px;
@@ -5943,8 +5947,7 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   color: #fff; }
 
 .grid-item {
-  margin: 0.1% 0.1% 0 0;
-  float: left; }
+  margin: 0.1% 0.1% 0 0; }
 
 @media screen and (min-width: 1391px) {
   .grid-item {
@@ -6012,5 +6015,14 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   height: 100px;
   width: auto;
   position: relative; }
+
+.scroll-alert {
+  position: fixed;
+  bottom: 0;
+  width: 50%;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  text-align: center; }
 
 /*# sourceMappingURL=app.css.map */

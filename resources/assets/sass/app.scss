@@ -122,36 +122,45 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 	color: transparent;
 }
 
-.panel-body.disapproved {
+.panel-body {
+	word-wrap: break-word;
 
-	&:before {
-		content: "DISAPPROVED";
-		font-size: 1.5em;
-    color: #d9534f;
-    position: absolute;
-    top: 25px;
-    left: 15px;
+	&.disapproved {
+
+		&:before {
+			content: "DISAPPROVED";
+			font-size: 1.5em;
+	    color: #d9534f;
+	    position: absolute;
+	    top: 25px;
+	    left: 15px;
+		}
 	}
-}
 
-.panel-body.approved {
+	&.approved {
 	
-	&:after {
-		@extend .panel-body.disapproved:before;
-		content: "APPROVED";
-    color: #32BD32;
+		&:after {
+			@extend .panel-body.disapproved:before;
+			content: "APPROVED";
+	    color: #32BD32;
+		}
 	}
 }
 
 .cta-wrapper {
-	min-height: 70px;
-}
+	min-height: 55px;
+  margin-top: 0;
 
-.header-btn-right {
-	position: absolute;
-	right: 15px;
-	margin: 20px 0;
-  display: inline-block;
+  .pagination {
+  	display: none;
+  }
+
+  .header-btn-right {
+		position: absolute;
+	  display: inline-block;
+	  left: 50%;
+	  transform: translateX(-50%);
+	}
 }
 
 .icon {
@@ -253,7 +262,6 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 
 .grid-item {
 	margin: 0.1% 0.1% 0 0;
-	float: left;
 }
 
 @media screen and (min-width: 1391px) {
@@ -379,4 +387,13 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 	height: 100px;
 	width: auto;
 	position: relative;
+}
+
+.scroll-alert {
+	position: fixed; 
+	bottom: 0; 
+	width: 50%; 
+	left:50%; 
+	transform: translateX(-50%);
+	text-align: center;
 }

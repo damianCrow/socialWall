@@ -27,9 +27,9 @@ Route::group(['middleware' => ['web']], function() {
 
   Route::resource('socialWall', 'socialWallController');
 
-  Route::get('/disapprove', 'socialWallController@disApprovePost');
+  Route::get('/disapprove/{postId}', 'socialWallController@disApprovePost');
   
-  Route::get('/approve', 'socialWallController@approvePost');
+  Route::get('/approve/{postId}', 'socialWallController@approvePost');
 
   Route::get('/run/socialWall/{socialwallId}', 'socialWallController@socialWallRun');
 
