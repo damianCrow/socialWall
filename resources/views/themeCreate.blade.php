@@ -64,9 +64,9 @@
         <label class="block" for="view"> Select View </label>
 
         <select id="view" name="view" class="form-control">  
-          <!-- <option > Default View </option> -->
           <option > Tile View </option>
           <option > Gallery View </option>
+          <option> Slider View </option>
         </select>
 
       </div>

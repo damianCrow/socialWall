@@ -34,9 +34,9 @@
         <label class="block" for="view"> Select View </label>
 
         <select id="view" name="view" class="form-control">  
-          <option @if(isset($request) && $request['view'] || $theme['view'] === 'Default View') selected @endif> Default View </option>
           <option @if(isset($request) && $request['view'] || $theme['view'] === 'Tile View') selected @endif> Tile View </option>
           <option @if(isset($request) && $request['view'] || $theme['view'] === 'Gallery View') selected @endif> Gallery View </option>
+          <option @if(isset($request) && $request['view'] || $theme['view'] === 'Slider View') selected @endif> Slider View </option>
         </select>
 
       </div>
