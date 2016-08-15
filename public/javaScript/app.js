@@ -8,9 +8,48 @@ $(document).ready(function() {
 		  itemSelector: '.grid-item',
 		  packery: {
 		  	percentPosition: true
-		  }
+		  },
+      getSortData: {
+        
+        dateAscending: function(element) {
+
+          var date = $(element).find($('.post-date')).text().split(/[\s\-]/);
+          return Date.parse(date[3]+ '-' +date[2]+ '-' +date[1]+ ' ' +date[4]);
+        },
+        dateDecending: function(element) {
+
+        }
+      }
 		});
 	});
+
+  $('#sorts').on('click', 'button.sort', function() {
+
+    var sortByValue = $(this).attr('data-sort-by');
+
+    if(sortByValue === 'dateDecending') {
+
+      var sortOrder = false;
+    }
+    else {
+      
+      sortOrder = true;
+    }
+
+    $('.grid').isotope({
+      sortBy: sortByValue,
+      sortAscending: sortOrder
+    });
+  });
+
+  $('#sorts').on('click', 'button.filter', function() {
+
+    var filterValue = $(this).attr('data-filter');
+
+    $('.grid').isotope({
+      filter: filterValue
+    });
+  });
 
 	$('#content-wrapper').on('click', '.approval', function(evt) {
 
@@ -24,12 +63,12 @@ $(document).ready(function() {
 
         if($(element).attr('href') === '/approve/' + $(element).attr('value')) {
 
-          $(element).parents().eq(2).find('.panel-body').removeClass('disapproved').toggleClass('approved');
+          $(element).parents().removeClass('disapproved').toggleClass('approved');
         }
 
         if($(element).attr('href') === '/disapprove/' + $(element).attr('value')) {
 
-          $(element).parents().eq(2).find('.panel-body').removeClass('approved').toggleClass('disapproved');
+          $(element).parents().removeClass('approved').toggleClass('disapproved');
         }
       },
       error: function(error) {
@@ -40,6 +79,8 @@ $(document).ready(function() {
 	});
 
 // SOCIAL WALL MULTISELECT AND TAGSINPUT CODE \\
+  
+  var count = 0;
 
   $('#mediachannels').multiselect({
 
@@ -47,9 +88,16 @@ $(document).ready(function() {
     onChange: function(option, checked) {
       
       if(!$('#' + $(option).val()).length) {
+
+        if(count === 2) {
+
+          var Accounts = '<div id="' + $(option).val() + '"class="input-group vertical-spacer col-lg-3 col-sm-6"><label for="' + $(option).val() + 'accounts"> Add ' + $(option).val() + ' Target Accounts </label><input class="form-control" id="' + $(option).val() + 'accounts" type="text" name="' + $(option).val() + 'accounts"></div>';
+        }
+        else {
         
-        var Accounts = '<div id="' + $(option).val() + '"class="input-group vertical-spacer col-lg-3 col-sm-6"><label for="' + $(option).val() + 'accounts"> Add ' + $(option).val() + ' Target Accounts </label><input class="form-control" id="' + $(option).val() + 'accounts" type="text" name="' + $(option).val() + 'accounts"></div>';
-        
+          var Accounts = '<div id="' + $(option).val() + '"class="input-group vertical-spacer col-lg-3 col-sm-6 col-lg-offset-1"><label for="' + $(option).val() + 'accounts"> Add ' + $(option).val() + ' Target Accounts </label><input class="form-control" id="' + $(option).val() + 'accounts" type="text" name="' + $(option).val() + 'accounts"></div>';
+        }
+
         $(Accounts).insertBefore($('.submit-button'));
 
         if($(option).val() === 'Vine') {
@@ -60,6 +108,8 @@ $(document).ready(function() {
 
           createTagsInput($('#' + $(option).val() + 'accounts'), 'Add Account NAMES');
         }
+
+        count++;
       }
       if($('#' + $(option).val()).length) {
 
@@ -67,6 +117,8 @@ $(document).ready(function() {
 
           $('#' + $(option).val()).remove();
           $('#' + $(option).val() + 'accounts').tagsInput('destroy');
+
+          count--;
         }
       }
     }
@@ -132,6 +184,7 @@ function getSocialWallRunData(url) {
 
     		data = JSON.parse(response);
         createView();
+        updatePosts(data.updateInterval, '/update/socialWall/' + data.data[0].socialwall_id);
     	}
     },
     error: function(response) {
@@ -139,6 +192,29 @@ function getSocialWallRunData(url) {
     	console.log(response);
     }
   });
+}
+
+function updatePosts(updateInterval, url) {
+
+  setInterval(function() {
+
+    $.ajax({
+      method: 'GET',
+      url: url,
+      success: function(response) {
+
+        if(response !== 'no new posts') {
+
+          $('<div class="alert alert-success fade in"><h4 class="alert-message">' + response + '<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>').insertBefore('div#header-wrapper');
+        }
+      },
+      error: function(response) {
+
+        console.log(response);
+      }
+    });
+
+  }, updateInterval * 60000);
 }
 
 function createView() {

@@ -76,6 +76,11 @@
         <input class="form-control" id="keywordfilter" type="text" name="keywordfilter" value="{{ Request::old('keywordfilter')}}">
       </div>
 
+      <div class="input-group vertical-spacer col-lg-3 {{ $errors -> has('updateinterval') ? 'has-error' : ''}}">
+        <label for="updateinterval"> Enter Update Interval (in minutes) </label>
+        <input id="updateinterval" class="form-control" type="text" name="updateinterval" value="{{ $socialWall['update_interval']}}">
+      </div>
+
       <div class=" submit-button input-group vertical-spacer col-lg-12">
         {{ Form::submit('Update socialWall', array('class' => 'btn btn-primary')) }}
       </div>

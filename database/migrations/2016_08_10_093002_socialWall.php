@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSocialWallsTable extends Migration
+class socialWall extends Migration
 {
     /**
      * Run the migrations.
@@ -16,6 +16,7 @@ class CreateSocialWallsTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->string('name');
+            $table->integer('update_interval');
             $table->string('media_channels');
             $table->string('target_accounts');
             $table->string('search_hashtags');
@@ -34,6 +35,6 @@ class CreateSocialWallsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('social_walls');
+     Schema::drop('social_walls');
     }
 }

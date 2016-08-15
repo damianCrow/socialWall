@@ -5,17 +5,17 @@ namespace socialwall;
 use socialwall\Http\Controllers\socialWallController;
 use Illuminate\Database\Eloquent\Model;
 use GuzzleHttp;
-use Session;
-use Config;
+use Validator;
 use Facebook;
 use stdClass;
-use Validator;
+use Session;
+use Config;
 
 class socialWall extends Model {
 
 	public static function buildQuery($socialWall, $channel) {
 
-		$testArray = ['filterParams' => [], 'queries' => []];
+		$paramsArray = ['filterParams' => [], 'queries' => []];
 
    	$oldCharacters = [',', '"'];
    	$newCharacters = [' OR ', ''];
@@ -28,7 +28,7 @@ class socialWall extends Model {
 
    		foreach ($hashtagsArray as $value) {
 
-   			array_push($testArray['filterParams'], str_replace('#', '', $value));
+   			array_push($paramsArray['filterParams'], str_replace('#', '', $value));
    		}
 
    		$hashtags = urlencode(str_replace($oldCharacters, $newCharacters, $socialWall['search_hashtags']));
@@ -44,7 +44,7 @@ class socialWall extends Model {
 			
 			foreach ($keywordsArray as $value) {
    			
-   			array_push($testArray['filterParams'], $value);
+   			array_push($paramsArray['filterParams'], $value);
    		}
 
 			$keywords = urlencode(str_replace(',', ' OR ', $socialWall['filter_keywords']) . ' ');
@@ -55,7 +55,7 @@ class socialWall extends Model {
 		}
 		if($channel === 'Facebook' || $channel ===  'Vine') {
 
-			return $testArray['filterParams'];
+			return $paramsArray['filterParams'];
 		}
 		if($channel === 'Twitter') {
 
@@ -69,14 +69,14 @@ class socialWall extends Model {
 
 				foreach ($accountsArray as $account) {
 
-					$query = 'statuses/user_timeline.json?screen_name=' . $account . '&include_rts=false' . '&count=200';
+					$query = 'statuses/user_timeline.json?screen_name=' . $account . $contentOrdering . '&include_rts=false' . '&count=200';
 
-					array_push($testArray['queries'], $query);
+					array_push($paramsArray['queries'], $query);
 				}
 
-				array_push($testArray, $queryArray);
+				array_push($paramsArray, $queryArray);
 
-				return $testArray;
+				return $paramsArray;
 			}
 			else {
 
@@ -119,8 +119,8 @@ class socialWall extends Model {
 				$fbObject = new stdClass();
 				$post_text;
 
+				$fbObject -> post_date = date_format(date_create($post->created_time->date), 'd-m-Y H:i:s');
 				$fbObject -> post_username = $post -> account;
-				
 
 				if(isset($post -> message)) {
 
@@ -199,6 +199,7 @@ class socialWall extends Model {
 
 		foreach($responseObj as $value) {
 
+			$value -> post_date = date_format(date_create($value -> created_at), 'd-m-Y H:i:s');
 			$value -> id = 'TW' . $value -> id;
 			$value -> media_type = 'image';
 		}
@@ -231,6 +232,7 @@ class socialWall extends Model {
 
 					$vineObject = new stdClass();
 					$vineObject -> id = 'VI'. $post -> postId;
+					$vineObject -> post_date = date_format(date_create($post -> created), 'd-m-Y H:i:s');
 					$vineObject -> post_username = $post -> username;
 					$vineObject -> text = $post -> description;
 					$vineObject -> media_type = 'video';
@@ -265,6 +267,7 @@ class socialWall extends Model {
 
 					$vineObject = new stdClass();
 					$vineObject -> id = 'VI'. $post -> postId;
+					$vineObject -> post_date = date_format(date_create($post -> created), 'd-m-Y H:i:s');
 					$vineObject -> post_username = $post -> username;
 					$vineObject -> text = $post -> description;
 					$vineObject -> media_type = 'video';
@@ -291,6 +294,8 @@ class socialWall extends Model {
   }
 
   public static function savePosts($array, $wallId) {
+
+  	$count = 0;
 
   	foreach ($array as $data) {
 
@@ -330,11 +335,12 @@ class socialWall extends Model {
 
 	  	$post -> socialwall_id = $wallId;
 	  	$post -> post_id = $data -> id;
+	  	$post -> post_date = $data -> post_date;
 	  	$post -> media_type = $data -> media_type;
 	  	$post -> post_text = utf8_encode($data -> text);
 	  	$post -> approved = '';
 
-	  	$rules = ['post_id' => 'unique:posts'];
+	  	$rules = ['post_id' => 'unique:posts,post_id,NULL,NULL,socialwall_id,' . $wallId];
 
 			$validator = Validator::make(get_object_vars($post)['attributes'], $rules);
 
@@ -347,9 +353,13 @@ class socialWall extends Model {
 		  else {
 
 		  	$post -> delete();
-
-		  	Session::flash('message', 'post '. $post->post_id . 'Deleted');
+		  	$count++;
 		  }
+  	}
+
+  	if($count > 0) {
+
+  		Session::flash('message', $count . ' Duplicate Posts Deleted!');
   	}
   }
 

@@ -5849,28 +5849,17 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 
 .panel-body {
   word-wrap: break-word; }
-  .panel-body.disapproved:before, .panel-body.approved:after {
-    content: "DISAPPROVED";
-    font-size: 1.5em;
-    color: #d9534f;
-    position: absolute;
-    top: 25px;
-    left: 15px; }
-  .panel-body.approved:after {
-    content: "APPROVED";
-    color: #32BD32; }
 
 .cta-wrapper {
   min-height: 55px;
-  margin-top: 0; }
+  margin-top: 0;
+  margin-bottom: 15px; }
   .cta-wrapper .pagination {
     display: none; }
   .cta-wrapper .header-btn-right {
     position: absolute;
-    display: inline-block;
-    left: 50%;
-    -webkit-transform: translateX(-50%);
-    transform: translateX(-50%); }
+    right: 15px;
+    bottom: 0; }
 
 .icon {
   height: 16px;
@@ -5937,6 +5926,9 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
     max-width: 100%;
     width: 100%; }
 
+.post-date {
+  padding-top: 15px; }
+
 .post-text {
   position: relative;
   margin-top: 3%;
@@ -5948,6 +5940,17 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
 
 .grid-item {
   margin: 0.1% 0.1% 0 0; }
+  .grid-item.disapproved:before, .grid-item.approved:after {
+    content: "DISAPPROVED";
+    font-size: 1.5em;
+    color: #d9534f;
+    position: absolute;
+    top: 25px;
+    left: 15px;
+    z-index: 2; }
+  .grid-item.approved:after {
+    content: "APPROVED";
+    color: #32BD32; }
 
 @media screen and (min-width: 1391px) {
   .grid-item {

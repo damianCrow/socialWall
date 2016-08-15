@@ -1,11 +1,21 @@
 <?php
 
+use Illuminate\Http\Request;
+
 Route::group(['middleware' => ['web']], function() {
 
-	Route::get('/', function() {
+	Route::get('/', function(Request $request) {
 
     Auth::logout();
     DB::table('posts') -> delete();
+
+    foreach($request->session()->all() as $key => $storedQuery) {
+
+      if(strpos($key, 'wall_id') !== false) {
+
+        $request->session()->forget($key);
+      }
+    }
 
     return view('welcome');
 	});
@@ -32,6 +42,8 @@ Route::group(['middleware' => ['web']], function() {
   Route::get('/approve/{postId}', 'socialWallController@approvePost');
 
   Route::get('/run/socialWall/{socialwallId}', 'socialWallController@socialWallRun');
+
+  Route::get('/update/socialWall/{socialwallId}', 'socialWallController@socialWallUpdate');
 
   Route::get('/socialWall/run/{socialwallId}', function() {
 

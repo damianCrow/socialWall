@@ -13,6 +13,7 @@
     	<li class="list-group-item">socialWall Id: <strong> {{ $socialWall->id }} </strong></li>
       <li class="list-group-item">User Id: <strong> {{ $socialWall->user_id }} </strong></li>
       <li class="list-group-item">Date Added: <strong> {{ $socialWall->created_at }} </strong></li>
+      <li class="list-group-item">Update Interval: <strong> {{ $socialWall->update_interval }} </strong></li>
       <li class="list-group-item">Media Channels: <strong> {{ $socialWall->media_channels }} </strong></li>
       <li class="list-group-item">Hashtags: <strong> {{ $socialWall->search_hashtags }} </strong></li>
       <li class="list-group-item">Associated Theme: <strong> {{ $socialWall->theme }} </strong></li>

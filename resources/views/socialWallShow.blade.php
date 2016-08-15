@@ -2,13 +2,20 @@
 
 @section('header')
 
-<h3 class="cta-wrapper col-lg-12"> 
+<div id="sorts" class="cta-wrapper col-lg-12"> 
 
 	{!! $data->render() !!} 
 
 	<button id="socialWallRunButton" value="run/{{$socialWallId}}" class="btn btn-lg btn-success header-btn-right col-lg-2" onclick="getSocialWallRunData('{{ URL::to('run/socialWall/' . $socialWallId) }}')">Run socialWall</button>
 
-</h3>
+	<h5 class="text-info">Sort By:</h5>
+	<button class="sort btn btn-info" data-sort-by="dateAscending">Date Ascending</button>
+	<button class="sort btn btn-info" data-sort-by="dateDecending">Date Decending</button>
+	<button class="filter btn btn-info" data-filter=".approved">Approved Posts</button>
+	<button class="filter btn btn-info" data-filter=".disapproved">Disapproved Posts</button>
+	<button class="filter btn btn-info" data-filter=".grid-item">All Posts</button>
+
+</div>
 
 @endsection
 
@@ -16,7 +23,7 @@
 	
 	@foreach($data as $tweet)
 
-		<div class="grid-item panel panel-info col-lg-3">
+		<div class="grid-item panel panel-info col-lg-3 @if($tweet -> approved === "1") approved @elseif($tweet -> approved === "0") disapproved @endif">
 		  <div class="post-header panel-heading">
 
 		  <p class="post-header-username">{{ $tweet -> post_username }}</p>
@@ -36,7 +43,7 @@
 
 		  </div>
 
-		  <div class="@if($tweet -> approved === "1") approved @elseif($tweet -> approved === "0") disapproved @endif panel-body">{{ $tweet -> post_text }}</div>
+		  <div class="panel-body">{{ $tweet -> post_text }}</div>
 
 		  @if($tweet -> post_media != '')
 
@@ -80,6 +87,7 @@
 		  	@endif
 		  @endif
 
+		  <p class="post-date"> {{ $tweet -> post_date }} </p>
 		</div>
 
 	@endforeach
@@ -107,7 +115,7 @@
     nextSelector : "#header-wrapper .cta-wrapper .pagination li.active + li a",
     itemSelector : "#content-wrapper div.grid-item"
   },
-  function(newElements){
+  function(newElements) {
 
    	$('#content-wrapper').isotope('appended', newElements);
   });

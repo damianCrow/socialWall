@@ -25,6 +25,13 @@ class socialWallController extends Controller {
   }
 
   public $responseArray = [];
+  public $postsUpdateArray = [
+		'fbAccounts' => null,
+		'twQuery' => [],
+		'viAccounts' => null,
+		'filter_params' => '',
+		'wall_id' => ''
+	];
 
   public function index() {
      
@@ -37,7 +44,7 @@ class socialWallController extends Controller {
   public function create() {
 
   	$themes = theme::where('is_private', '=', '0')
-  		->orWhere('user_id', '=', Auth::user()['id']) -> get();
+  		->orWhere('user_id', '=', Auth::user()['id'])->get();
     
   	return view('socialWallCreate')
   		->with('themes', $themes);
@@ -47,29 +54,31 @@ class socialWallController extends Controller {
 
   	$post = posts::find($id);
 
-  	$post -> approved = 1;
+  	$post->approved = 1;
 
-  	$post -> save();
+  	$post->save();
   }
   public function disApprovePost($id) {
   	
   	$post = posts::find($id);
 
-  	$post -> approved = 0;
+  	$post->approved = 0;
 
-  	$post -> save();
+  	$post->save();
   }
 
   public function store(Request $request) {
 
-		$this -> validate($request, [
+		$this->validate($request, [
 			'name' => 'required|unique:social_walls|min:4',
 			'mediachannels' => 'required|array',
+			'updateinterval' => 'required|numeric|max:100|min:10',
 			// 'Facebookaccounts' => 'required_if:mediachannels,0'
 		]);
 
 
 		$name = $request['name'];
+		$updateInterval = $request['updateinterval'];
 		$media_channels = json_encode($request['mediachannels']);
 		$search_hashtags = $request['searchcriteria'];
 		$target_accounts = json_encode(socialWall::buildAccountsObj($request));
@@ -79,28 +88,29 @@ class socialWallController extends Controller {
 		
 
 		$socialwall = new socialWall();
-		$socialwall -> user_id = Auth::user()['id'];
-		$socialwall -> name = $name;
-		$socialwall -> media_channels = $media_channels;
-		$socialwall -> target_accounts = $target_accounts;
-		$socialwall -> search_hashtags = $search_hashtags;
-		$socialwall -> theme = $theme;
-		$socialwall -> results_order = $results_order;
-		$socialwall -> filter_keywords = $filter_keywords;
+		$socialwall->user_id = Auth::user()['id'];
+		$socialwall->name = $name;
+		$socialwall->update_interval = $updateInterval;
+		$socialwall->media_channels = $media_channels;
+		$socialwall->target_accounts = $target_accounts;
+		$socialwall->search_hashtags = $search_hashtags;
+		$socialwall->theme = $theme;
+		$socialwall->results_order = $results_order;
+		$socialwall->filter_keywords = $filter_keywords;
 
-		$socialwall -> save();
+		$socialwall->save();
 
 		Session::flash('message', 'You have successfully created a new socialWall.');
 
-		return redirect() -> action('socialWallController@index');
+		return redirect()->action('socialWallController@index');
 	}
 
-  public function show($id) {
+  public function show(Request $request, $id) {
 
-		if(Input::get('page') || posts::where('socialwall_id', '=', $id)->exists()) {
+		if(posts::where('socialwall_id', '=', $id)->exists()) {
 			
-			$data = posts::orderBy(DB::raw('RAND()'))
-				->where('socialwall_id', '=', $id)
+			$data = posts::where('socialwall_id', '=', $id)
+				->orderBy('post_date', 'desc')
 				->paginate(20);
 	    
 			return View::make('socialWallShow')
@@ -119,61 +129,125 @@ class socialWallController extends Controller {
 					if(is_array($returnedQuery)) {
 
 						foreach ($returnedQuery['queries'] as $query) {
-							
-							$this -> populateResponseArray(socialWall::makeRequestTW($query, $returnedQuery['filterParams']), $id);
+
+							array_push($this->postsUpdateArray['twQuery'], $query);
+							$this->postsUpdateArray['filter_params'] = $returnedQuery['filterParams'];
+							$this->postsUpdateArray['wall_id'] = $id;
+
+							$this->populateResponseArray(socialWall::makeRequestTW($query, $returnedQuery['filterParams']), $id);
 						}
 					}
 					else {
 
-						$this -> populateResponseArray(socialWall::makeRequestTW($returnedQuery, null), $id);
+						array_push($this->postsUpdateArray['twQuery'], $returnedQuery);
+						$this->postsUpdateArray['wall_id'] = $id;
+
+						$this->populateResponseArray(socialWall::makeRequestTW($returnedQuery, null), $id);
 					}
 				}
 				if($channel === 'Facebook') {
 
-					$accounts = json_decode($socialWall['target_accounts']) -> Facebookaccounts;
+					$accounts = json_decode($socialWall['target_accounts'])->Facebookaccounts;
 					
 					$filterParams = socialWall::buildQuery($socialWall, $channel);
 
-					$this -> populateResponseArray(socialWall::makeRequestFB($accounts, $filterParams), $id);
+					$this->postsUpdateArray['fbAccounts'] = $accounts;
+					$this->postsUpdateArray['filter_params'] = $filterParams;
+					$this->postsUpdateArray['wall_id'] = $id;
+
+					$this->populateResponseArray(socialWall::makeRequestFB($accounts, $filterParams), $id);
 				}
 				if($channel === 'Vine') {
 
-					$accounts = json_decode($socialWall['target_accounts']) -> Vineaccounts;
+					$accounts = json_decode($socialWall['target_accounts'])->Vineaccounts;
 					$filterParams = socialWall::buildQuery($socialWall, $channel);
 
 					if(!empty($accounts[0])) {
-						
-						$this -> populateResponseArray(socialWall::makeRequestVI($accounts, $filterParams), $id);
+
+						$this->postsUpdateArray['viAccounts'] = $accounts;
+						$this->postsUpdateArray['filter_params'] = $filterParams;
+						$this->postsUpdateArray['wall_id'] = $id;
+
+						$this->populateResponseArray(socialWall::makeRequestVI($accounts, $filterParams), $id);
 					}
 					else {
 
-						$this -> populateResponseArray(socialWall::makeRequestVI(null, $filterParams), $id);
+						$this->postsUpdateArray['filter_params'] = $filterParams;
+						$this->postsUpdateArray['wall_id'] = $id;
+
+						$this->populateResponseArray(socialWall::makeRequestVI(null, $filterParams), $id);
 					}
 				}
 			}
 
+			$request->session()->put('wall_id' . $id, json_encode($this->postsUpdateArray));
+
 echo ' after ' . Count($this->responseArray) . ' Tweets';
 		
-	    $data = posts::orderBy(DB::raw('RAND()'))
-		    ->where('socialwall_id', '=', $id)
-		    ->paginate(20);
+	    $data = posts::where('socialwall_id', '=', $id)
+				->orderBy('post_date', 'desc')
+				->paginate(20);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id]);
 		}
   }
 
+  public function socialWallUpdate(Request $request, $id) {
+
+  	if($this->updatePosts(json_decode($request->session()->get('wall_id' . $id)), posts::where('socialwall_id', '=', $id)->count()) < posts::where('socialwall_id', '=', $id)->count()) {
+					
+			return 'There new post for this socialWall available! Refresh the page to see the new posts!';
+		}
+		else {
+
+			return 'no new posts';
+		}	
+  }
+
+  public function updatePosts($queryArray, $totalPosts) {
+
+  	if(count($queryArray->twQuery) > 0) {
+
+  		foreach($queryArray->twQuery as $query) {
+
+  			if(count($queryArray->filter_params) > 0) {
+  				
+  				$this->populateResponseArray(socialWall::makeRequestTW($query, $queryArray->filter_params), $queryArray->wall_id);
+  			}
+  			else {
+
+  				$this->populateResponseArray(socialWall::makeRequestTW($query, null), $queryArray->wall_id);
+  			}
+  		}
+  	}
+  	if(count($queryArray->fbAccounts) > 0) {
+  		
+  		$this->populateResponseArray(socialWall::makeRequestFB($queryArray->fbAccounts, $queryArray->filter_params), $queryArray->wall_id);
+  	}
+  	if(count($queryArray->viAccounts) > 0) {
+  		
+  		$this->populateResponseArray(socialWall::makeRequestVI($queryArray->viAccounts, $queryArray->filter_params), $queryArray->wall_id);
+  	}
+  	else if(count($queryArray->filter_params) > 0) {
+
+  		$this->populateResponseArray(socialWall::makeRequestVI(null, $queryArray->filter_params), $queryArray->wall_id);
+  	}
+
+  	return $totalPosts;
+  } 
+
   public function populateResponseArray($responseObj, $id) {
 
-  	if(count($responseObj) < 1) {
+  	if(count($responseObj) < 1 && !isset($responseObj->statuses)) {
 			
 			return Session::flash('message', 'There are no posts which contain any of the hashtags or keywords provided');
 		}
 		else {
 
-			if(isset($responseObj -> statuses)) {
+			if(isset($responseObj->statuses)) {
 				
-				$data = $responseObj -> statuses;
+				$data = $responseObj->statuses;
 			}
 			else {
 
@@ -185,9 +259,9 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 				array_push($this->responseArray, $value);
 			}
 
-			if(isset($responseObj -> search_metadata -> next_results)) {
+			if(isset($responseObj->search_metadata->next_results)) {
 
-				$this -> populateResponseArray(socialWall::makeRequestTW('search/tweets.json' . $responseObj -> search_metadata -> next_results, null), $id);
+				$this->populateResponseArray(socialWall::makeRequestTW('search/tweets.json' . $responseObj->search_metadata->next_results, null), $id);
 			}
 			else {
 				
@@ -199,13 +273,13 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
   public function edit($id) {
 
   	$themes = theme::where('is_private', '=', '0')
-  		->orWhere('user_id', '=', Auth::user()['id']) -> get();
+  		->orWhere('user_id', '=', Auth::user()['id'])->get();
 
   	$socialWall = socialWall::find($id);
 
   	$target_accounts = [];
 
-  	foreach (json_decode($socialWall['target_accounts']) as $key => $value) {
+  	foreach(json_decode($socialWall['target_accounts']) as $key => $value) {
 
   		$target_accounts[$key] = $value;
   	}
@@ -229,10 +303,10 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
     $socialWall = socialWall::find($id);
     $request = Input::all();
     $themes = theme::all();
-			
 		$rules = [
 			'name' => 'required|min:4|unique:social_walls,name,' .$id,
 			'mediachannels' => 'required|array',
+			'updateinterval' => 'required|numeric|max:100|min:10',
 			// 'Facebookaccounts' => 'required_if:mediachannels,0'
 		];
             
@@ -271,32 +345,33 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 			    	'media_channels' => $media_channels,
 			    	'themes' => $themes
         	]);         
-        
     } 
     else {
 
     	$name = $request['name'];
+    	$target_accounts = json_encode(socialWall::buildAccountsObj($request));
 			$media_channels = json_encode($request['mediachannels']);
 			$search_hashtags = $request['searchcriteria'];
-			$target_accounts = json_encode(socialWall::buildAccountsObj($request));
 			$theme = $request['themeselect'];
 			$results_order = $request['resultsorder'];
 			$filter_keywords = $request['keywordfilter'];
-       
-			$socialWall -> user_id = Auth::user()['id'];
-			$socialWall -> name = $name;
-			$socialWall -> media_channels = $media_channels;
-			$socialWall -> target_accounts = $target_accounts;
-			$socialWall -> search_hashtags = $search_hashtags;
-			$socialWall -> theme = $theme;
-			$socialWall -> results_order = $results_order;
-			$socialWall -> filter_keywords = $filter_keywords;
+			$updateInterval = $request['updateinterval'];
+      
+			$socialWall->user_id = Auth::user()['id'];
+			$socialWall->name = $name;
+			$socialWall->update_interval = $updateInterval;
+			$socialWall->media_channels = $media_channels;
+			$socialWall->target_accounts = $target_accounts;
+			$socialWall->search_hashtags = $search_hashtags;
+			$socialWall->theme = $theme;
+			$socialWall->results_order = $results_order;
+			$socialWall->filter_keywords = $filter_keywords;
 
-			$socialWall -> save();
+			$socialWall->save();
 
       Session::flash('message', 'You have successfully updated this socialWall.');
 
-     	return redirect() -> action('socialWallController@index');
+     	return redirect()->action('socialWallController@index');
 		}
   }
 
@@ -304,21 +379,22 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
      
     $socialWall = socialWall::find($id);
 
-    $socialWall -> delete();
+    $socialWall->delete();
 
     Session::flash('message', 'You have successfully deleted this socialWall!');
 
-    return redirect() -> back();
+    return redirect()->back();
   }
 
   public function socialWallRun($id) {
 
-  	$themeName = socialWall::find($id) -> theme;
+  	$themeName = socialWall::find($id)->theme;
+  	$updateInterval = socialWall::find($id)->update_interval;
 
-  	$theme = theme::where('name', '=', $themeName) -> get();
+  	$theme = theme::where('name', '=', $themeName)->get();
 
   	$data = posts::where('socialwall_id', '=', $id) 
-  		-> where('approved', '=', '1') -> get();
+  		->where('approved', '=', '1')->get();
 
   	if(count($data) < 1) {
 
@@ -326,7 +402,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
   	}
   	else {
 
-  		$response = ['data' => $data, 'theme' => $theme];
+  		$response = ['data' => $data, 'theme' => $theme, 'updateInterval' => $updateInterval];
   		return json_encode($response);
   	}
   }
