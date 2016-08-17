@@ -107,6 +107,8 @@ class socialWallController extends Controller {
 
   public function show(Request $request, $id) {
 
+  	$updateInterval = socialWall::find($id) -> update_interval;
+
 		if(posts::where('socialwall_id', '=', $id)->exists()) {
 			
 			$data = posts::where('socialwall_id', '=', $id)
@@ -114,7 +116,7 @@ class socialWallController extends Controller {
 				->paginate(20);
 	    
 			return View::make('socialWallShow')
-	   		->with(['data' => $data, 'socialWallId' => $id]);
+	   		->with(['data' => $data, 'socialWallId' => $id, 'updateInterval' => $updateInterval]);
 		}
 		else {
 
@@ -189,7 +191,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 				->paginate(20);
 	    
 			return View::make('socialWallShow')
-	   		->with(['data' => $data, 'socialWallId' => $id]);
+	   		->with(['data' => $data, 'socialWallId' => $id, 'updateInterval' => $updateInterval]);
 		}
   }
 

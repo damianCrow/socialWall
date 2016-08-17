@@ -101,7 +101,28 @@
 
 <script type="text/javascript">
 
-(function(){
+(function updatePosts(){
+
+  setInterval(function() {
+
+    $.ajax({
+      method: 'GET',
+      url: '/update/socialWall/' + {{$socialWallId}},
+      success: function(response) {
+
+        if(response !== 'no new posts') {
+
+          $('<div class="alert alert-success fade in"><h4 class="alert-message">' + response + '<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>').insertBefore('div#header-wrapper');
+        }
+      },
+      error: function(response) {
+
+        console.log(response);
+      }
+    });
+
+  }, {{$updateInterval}} * 60000);
+
 
   $('#content-wrapper').infinitescroll({
     loading : {
