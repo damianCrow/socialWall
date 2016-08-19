@@ -14,6 +14,7 @@
       </script>
       <script type="text/javascript" src="https://npmcdn.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenMax.min.js"></script>
+      <script type="text/javascript" src="{{ URL::asset('javaScript/createFBvideo.js') }}"></script>
       
   </head>
   </head>

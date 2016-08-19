@@ -56,21 +56,6 @@
 		  	 		<script type="text/javascript">
 						  	 		
 						  $('#{{ $tweet -> post_id }}').append(createFBVideo('{{ $tweet -> post_media }}'));
-						  
-							function createFBVideo(src) {
-
-								(function(d, s, id) {
-							    var js, fjs = d.getElementsByTagName(s)[0];
-							    if (d.getElementById(id)) return;
-							    js = d.createElement(s); js.id = id;
-							    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
-							    fjs.parentNode.insertBefore(js, fjs);
-							  }(document, 'script', 'facebook-jssdk'));
-
-							  var FBVideo = '<div class="fb-video post-video" data-href="' + src +'"data-show-text="false"></div>';
-
-							 	return FBVideo;
-						 	}
 
 						</script>
 		  	 		
@@ -112,7 +97,71 @@
 
         if(response !== 'no new posts') {
 
-          $('<div class="alert alert-success fade in"><h4 class="alert-message">' + response + '<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>').insertBefore('div#header-wrapper');
+         	var data = JSON.parse(response);
+         	
+          $('<div class="alert alert-success fade in"><h4 class="alert-message">There are new posts for this socialWall available! Click <button id="showPostButton" class="btn btn-info" data-dismiss="alert">Here</button> to see the new posts!<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>').insertBefore('.cta-wrapper');
+
+          $('#showPostButton').click(function() {
+
+          	data.forEach(function(post, index, arr) {
+
+          		var isApproved, logoSrc, media, date;
+
+	          	date = '<p class="post-date">'+ post.post_date +'</p>';
+
+	          	if(post.approved === "1") {
+
+	          		isApproved = 'approved';
+	          	} 
+	          	else if(post.approved === "0") {
+
+	          		isApproved = 'disapproved';
+	          	}
+
+	          	if(post.post_id.charAt(0) === 'T') { 
+
+	          		logoSrc = '{{ asset("assets/twitterLogo_blue.png") }}';
+	          	} 
+	          	else if(post.post_id.charAt(0) === 'F') {
+
+	          		logoSrc = '{{ asset("assets/facebookLogo.png") }}';
+	          	} 
+	          	else if(post.post_idcharAt(0) === 'V') { 
+
+	          		logoSrc ='{{ asset("assets/vineLogo.png") }}';
+	          	}
+
+	          	if(post.post_media != '') {
+
+			  				if(post.media_type === 'video') {
+
+			  	 				if(post.post_id.charAt(0) === 'F') {
+
+			  	 					media = '<div id="'+post.post_id +'" class="post-video"></div>';
+
+			  	 					$('#'+post.post_id).append(createFBVideo(post.post_media));
+						  
+			  	 				}
+			  	 				else {
+
+			  	 					media = '<video class="post-video" controls="true"><source src="'+post.post_media+'"></video>';
+			  	 				}
+			  	 			}
+			  	 			else {
+
+			  	 				media = '<img class="post-image-custom" src="'+post.post_media+'">';
+			  	 			}
+			  	 		}
+			  	 		else {
+
+			  	 			media = '';
+			  	 		}
+
+	          	var postHtmlString ='<div class="grid-item panel panel-info col-lg-3"'+ isApproved +'"><div class="post-header panel-heading"><p class="post-header-username">'+ post.post_username +'</p><div class="channel-logo-wrapper pull-right"><img class="channel-logo" src="' + logoSrc + '"><a class="approval" href="/approve/'+ post.id +'" value="'+ post.id +'"><span class="icon-tick icon icon-checkmark"></span></a><a class="approval" href="/disapprove/'+ post.id +'" value="'+ post.id +'"><span value="0" class="icon icon-close icon-cross"></span></a></div></div><div class="panel-body">'+ post.post_text +'</div>'+ media +'<p class="post-date">'+ post.post_date +'</p></div>';
+
+	          	$('#content-wrapper').prepend(postHtmlString).isotope('reloadItems').isotope({ sortBy: 'dateDecending' });
+          	});
+          });
         }
       },
       error: function(response) {
@@ -122,7 +171,6 @@
     });
 
   }, {{$updateInterval}} * 60000);
-
 
   $('#content-wrapper').infinitescroll({
     loading : {

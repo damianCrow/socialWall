@@ -72,7 +72,7 @@ class socialWallController extends Controller {
 		$this->validate($request, [
 			'name' => 'required|unique:social_walls|min:4',
 			'mediachannels' => 'required|array',
-			'updateinterval' => 'required|numeric|max:100|min:10',
+			'updateinterval' => 'required|numeric|max:100|min:5',
 			// 'Facebookaccounts' => 'required_if:mediachannels,0'
 		]);
 
@@ -112,8 +112,8 @@ class socialWallController extends Controller {
 		if(posts::where('socialwall_id', '=', $id)->exists()) {
 			
 			$data = posts::where('socialwall_id', '=', $id)
-				->orderBy('post_date', 'desc')
-				->paginate(20);
+				->orderBy('created_at', 'desc')
+				->paginate(30);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id, 'updateInterval' => $updateInterval]);
@@ -187,8 +187,8 @@ class socialWallController extends Controller {
 echo ' after ' . Count($this->responseArray) . ' Tweets';
 		
 	    $data = posts::where('socialwall_id', '=', $id)
-				->orderBy('post_date', 'desc')
-				->paginate(20);
+				->orderBy('created_at', 'desc')
+				->paginate(30);
 	    
 			return View::make('socialWallShow')
 	   		->with(['data' => $data, 'socialWallId' => $id, 'updateInterval' => $updateInterval]);
@@ -197,9 +197,17 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 
   public function socialWallUpdate(Request $request, $id) {
 
-  	if($this->updatePosts(json_decode($request->session()->get('wall_id' . $id)), posts::where('socialwall_id', '=', $id)->count()) < posts::where('socialwall_id', '=', $id)->count()) {
-					
-			return 'There new post for this socialWall available! Refresh the page to see the new posts!';
+  	$oldTotalPosts = $this->updatePosts(json_decode($request->session()->get('wall_id' . $id)), posts::where('socialwall_id', '=', $id)->count());
+
+  	$newTotalPosts = posts::where('socialwall_id', '=', $id)->count();
+
+  	if($oldTotalPosts < $newTotalPosts) {
+
+			$newPosts = posts::where('socialwall_id', '=', $id)
+				->orderBy('created_at', 'asc')
+				->skip($oldTotalPosts)->take($newTotalPosts - $oldTotalPosts)->get();
+
+				return json_encode($newPosts);
 		}
 		else {
 
@@ -308,7 +316,7 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
 		$rules = [
 			'name' => 'required|min:4|unique:social_walls,name,' .$id,
 			'mediachannels' => 'required|array',
-			'updateinterval' => 'required|numeric|max:100|min:10',
+			'updateinterval' => 'required|numeric|max:100|min:5',
 			// 'Facebookaccounts' => 'required_if:mediachannels,0'
 		];
             

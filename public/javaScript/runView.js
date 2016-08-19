@@ -57,12 +57,12 @@ $(document).ready(function() {
 		});
 	}
 
-	function createFBVideo(src, postId) {
+	// function createFBVideo(src, postId) {
 
-	  var FBVideo = '<div class="post-video-wrapper"><div id="' + postId + '" class="fb-video post-video" data-href="' + src +'"data-show-text="false"></div></div>';
+	//   var FBVideo = '<div class="post-video-wrapper"><div id="' + postId + '" class="fb-video post-video" data-href="' + src +'"data-show-text="false"></div></div>';
 
-	 	return FBVideo;
- 	}
+	//  	return FBVideo;
+ // 	}
 
 	function assignLogo(post) {
 
