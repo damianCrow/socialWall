@@ -181,7 +181,7 @@ function getSocialWallRunData(url) {
 
     		data = JSON.parse(response);
         createView();
-        // updatePosts(data.updateInterval, '/update/socialWall/' + data.data[0].socialwall_id);
+        updatePosts(data.updateInterval, '/update/socialWall/' + data.data[0].socialwall_id);
     	}
     },
     error: function(response) {
@@ -191,28 +191,28 @@ function getSocialWallRunData(url) {
   });
 }
 
-// function updatePosts(updateInterval, url) {
+function updatePosts(updateInterval, url) {
 
-//   setInterval(function() {
+  setInterval(function() {
 
-//     $.ajax({
-//       method: 'GET',
-//       url: url,
-//       success: function(response) {
+    $.ajax({
+      method: 'GET',
+      url: url,
+      success: function(response) {
 
-//         if(response !== 'no new posts') {
+        if(response !== 'no new posts') {
 
-//           $('<div class="alert alert-success fade in"><h4 class="alert-message">' + response + '<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>').insertBefore('div#header-wrapper');
-//         }
-//       },
-//       error: function(response) {
+          $('<div class="alert alert-success fade in"><h4 class="alert-message">' + response + '<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a></h4></div>').insertBefore('div#header-wrapper');
+        }
+      },
+      error: function(response) {
 
-//         console.log(response);
-//       }
-//     });
+        console.log(response);
+      }
+    });
 
-//   }, updateInterval * 60000);
-// }
+  }, updateInterval * 60000);
+}
 
 function createView() {
 

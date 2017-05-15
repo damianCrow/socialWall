@@ -14,6 +14,7 @@
 	<button class="filter btn btn-info" data-filter=".approved">Approved Posts</button>
 	<button class="filter btn btn-info" data-filter=".disapproved">Disapproved Posts</button>
 	<button class="filter btn btn-info" data-filter=".grid-item">All Posts</button>
+	<a class="filter btn btn-warning" href="{{ URL::to('refresh/socialWall/' . $socialWallId) }}">Refresh Posts</a>
 
 </div>
 
@@ -187,9 +188,53 @@
   function(newElements) {
 
    	$('#content-wrapper').isotope('appended', newElements);
+   	listenForApproval();
   });
 })();
 
+</script>
+
+<script type="text/javascript">
+	
+	var lastClicked = null;
+
+	// $(document).ready(function() {
+
+			function listenForApproval() {
+		    
+		    var icons;
+
+		    $('.icon').click(function(e) {
+	
+		    	if(e.target.classList.contains('icon-cross')) {
+
+		    		icons = $('.icon-cross');
+		    	}
+		    	else {
+
+		    		icons = $('.icon-tick');
+		    	}
+
+		        if(!lastClicked) {
+		            lastClicked = this;
+		            return;
+		        }
+
+		        if(e.shiftKey) {
+		        	
+		            var start = icons.index(this);
+		            var end = icons.index(lastClicked)+1;
+
+		            icons.slice(Math.min(start,end), Math.max(start,end)).click();
+
+		        }
+
+		        lastClicked = this;
+		    });
+	  }
+
+	  listenForApproval();
+	// });
 </script>
 
 @endsection

@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /*!
- * Bootstrap v3.3.6 (http://getbootstrap.com)
- * Copyright 2011-2015 Twitter, Inc.
+ * Bootstrap v3.3.7 (http://getbootstrap.com)
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
@@ -1072,7 +1072,6 @@ a {
     color: #23527c;
     text-decoration: underline; }
   a:focus {
-    outline: thin dotted;
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
 
@@ -2284,7 +2283,6 @@ select[size] {
 input[type="file"]:focus,
 input[type="radio"]:focus,
 input[type="checkbox"]:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px; }
 
@@ -2789,7 +2787,6 @@ select[multiple].input-lg,
   -ms-user-select: none;
   user-select: none; }
   .btn:focus, .btn.focus, .btn:active:focus, .btn:active.focus, .btn.active:focus, .btn.active.focus {
-    outline: thin dotted;
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
   .btn:hover, .btn:focus, .btn.focus {
@@ -4374,12 +4371,6 @@ a.thumbnail.active {
   .alert-danger .alert-link {
     color: #843534; }
 
-@-webkit-keyframes progress-bar-stripes {
-  from {
-    background-position: 40px 0; }
-  to {
-    background-position: 0 0; } }
-
 @keyframes progress-bar-stripes {
   from {
     background-position: 40px 0; }
@@ -4413,7 +4404,6 @@ a.thumbnail.active {
 
 .progress.active .progress-bar,
 .progress-bar.active {
-  -webkit-animation: progress-bar-stripes 2s linear infinite;
   animation: progress-bar-stripes 2s linear infinite; }
 
 .progress-bar-success {
@@ -5027,12 +5017,9 @@ button.close {
   -webkit-overflow-scrolling: touch;
   outline: 0; }
   .modal.fade .modal-dialog {
-    -webkit-transform: translate(0, -25%);
     transform: translate(0, -25%);
-    transition: -webkit-transform 0.3s ease-out;
     transition: transform 0.3s ease-out; }
   .modal.in .modal-dialog {
-    -webkit-transform: translate(0, 0);
     transform: translate(0, 0); }
 
 .modal-open .modal {
@@ -5375,22 +5362,16 @@ button.close {
       line-height: 1; }
     @media all and (transform-3d), (-webkit-transform-3d) {
       .carousel-inner > .item {
-        transition: -webkit-transform 0.6s ease-in-out;
         transition: transform 0.6s ease-in-out;
-        -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
-        -webkit-perspective: 1000px;
         perspective: 1000px; }
         .carousel-inner > .item.next, .carousel-inner > .item.active.right {
-          -webkit-transform: translate3d(100%, 0, 0);
           transform: translate3d(100%, 0, 0);
           left: 0; }
         .carousel-inner > .item.prev, .carousel-inner > .item.active.left {
-          -webkit-transform: translate3d(-100%, 0, 0);
           transform: translate3d(-100%, 0, 0);
           left: 0; }
         .carousel-inner > .item.next.left, .carousel-inner > .item.prev.right, .carousel-inner > .item.active {
-          -webkit-transform: translate3d(0, 0, 0);
           transform: translate3d(0, 0, 0);
           left: 0; } }
   .carousel-inner > .active,
@@ -5915,7 +5896,6 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   width: 80%;
   position: relative;
   left: 50%;
-  -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   text-align: center; }
 
@@ -6024,7 +6004,6 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   bottom: 0;
   width: 50%;
   left: 50%;
-  -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
   text-align: center; }
 
@@ -6035,11 +6014,12 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
   background-repeat: no-repeat;
   background-size: 100% auto;
   background-position: 50% 50%;
-  border: 1px solid; }
+  border: 1px solid;
+  will-change: transform;
+  /* HIDDEN!!*/ }
   .slide .post-video-wrapper {
     width: 100%;
     height: auto;
-    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     top: 50%;
     left: 50%; }
@@ -6047,11 +6027,14 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
     bottom: 0;
     position: absolute;
     left: 50%;
-    -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
     width: 100%;
     opacity: 0.7;
-    font-size: 120%; }
+    font-size: 90%;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; }
   .slide .channel-logo {
     position: absolute;
     top: 0; }
@@ -6059,9 +6042,11 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
     position: absolute;
     top: 0;
     left: 50%;
-    -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
-    opacity: 0.8; }
+    opacity: 0.8;
+    margin: 0;
+    font-size: 150%;
+    display: none; }
   .slide.in-focus {
     background-size: auto 90%;
     background-position: center top; }
@@ -6070,9 +6055,43 @@ a.approval, a.approval:hover, a.approval:active, a.approval:visited {
       height: 90%;
       top: 0;
       left: 0;
-      -webkit-transform: translate(0%, 0%);
       transform: translate(0%, 0%); }
       .slide.in-focus .post-video-wrapper .fb-video {
         max-width: 90%; }
+
+/* CSS FOR DRAG SELECT 
+.ghost-select {
+  display: none;
+  z-index: 9000;
+  position: absolute !important;
+  cursor: default !important;
+}
+
+#score {
+  position: absolute;
+  top: 0px;
+  left: 200px;
+  color: #ffffff;
+}
+
+#big-ghost{
+  background-color:rgba(239, 28, 190, 0.6);
+  border:1px solid #aaf81a;
+  position:absolute;
+}
+
+.ghost-active {
+  display: block !important;
+}
+
+.ghost-select > span {
+  background-color: rgba(239, 28, 190, 0.6);
+  border: 1px solid #b20e8c;
+  width: 100%;
+  height: 100%;
+  float: left;
+}
+
+*/
 
 /*# sourceMappingURL=app.css.map */

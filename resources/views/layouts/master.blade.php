@@ -50,4 +50,4 @@
     <script type="text/javascript" src="{{ URL::asset('javaScript/app.js') }}"></script>
     @yield('scripts')
   </body>
-</html>
+  </html>

@@ -9,12 +9,12 @@ function sliderView(data) {
 	data.forEach(function(post, index, arr) { 
 
 		$('body').append(post);
-		$('.slide').css({'left': '-50%'});
+		$('.slide').css({'left': '-50%', 'top': '5%'});
 	});
 
-	$('.post-text, .post-author').hide();
+	// $('.post-text, .post-author').hide();
 	
-	TweenMax.staggerTo('.slide', 15, {left: '110%', onComplete: slideHorizontally}, 4);
+	TweenMax.staggerTo('.slide', 15, {x: '110%', onComplete: slideHorizontally}, 4);
 
 	var postsArray = document.querySelectorAll('.slide');
 
@@ -34,16 +34,16 @@ function sliderView(data) {
 		}
 		else {
 
-			var randomnumber = Math.ceil(Math.random() * 70);
+			var randomnumber = Math.ceil(Math.random() * 70) + 5;
 			var randomnumber2 = Math.ceil(Math.random() * 30) + 15;
 
-			if(this.target.style.left === '110%') {
+			if(this.target.style.transformX === '110%') {
 
-				this.target.style.left = '-50%';
+				this.target.style.transformX = '-50%';
 				this.target.style.top = randomnumber + '%';			
 			}
 
-			if(this.target.style.left === '-50%') {
+			if(this.target.style.transformX === '-50%') {
 
 				return tween(this.target, randomnumber2, slideHorizontally);
 			}
@@ -56,12 +56,13 @@ function sliderView(data) {
 		var originalHeight = elem.style.height;
 
 		TweenMax.killTweensOf(elem);
-		elem.style.opacity = 1;
+// FOCUSED TWEEN NOT SHOWN!! \\
+		elem.style.opacity = 0;
 
 		focusTween(elem, 10000, function() {
-
-			elem.style.opacity = 0.8;
-			regularSize(elem, originalWidth, originalHeight, tween(elem, 15, slideHorizontally));
+// COMENTED CODE BELOW STOPS TWEEN ZOMING IN AND OUT. \\
+			// elem.style.opacity = 0.8;
+			// regularSize(elem, originalWidth, originalHeight, tween(elem, 15, slideHorizontally));
 		});
 	}
 
@@ -79,40 +80,40 @@ function sliderView(data) {
 
 		setTimeout(function() {
 
-			$(elem).find($('.post-text, .post-author')).show();
+			// $(elem).find($('.post-text, .post-author')).show();
 
-			TweenMax.from(elem, 15, {
-				left: '110%'
-				// top: 0
-			});
+			// TweenMax.from(elem, 15, {
+			// 	left: '110%'
+			// 	// top: 0
+			// });
 
 			TweenMax.to(elem, 1.5, {
-				left: '10%', 
-				top: '10%', 
-				height: '80%', 
-				width: '80%', 
-				zIndex: 100, 
+				// left: '10%', 
+				// top: '10%', 
+				// height: '80%', 
+				// width: '80%', 
+				// zIndex: 100, 
 				onComplete: function() {
 
-					if($(elem).find($('.vine-video')).length && $(elem).hasClass('in-focus')) {
+					// if($(elem).find($('.vine-video')).length && $(elem).hasClass('in-focus')) {
 
-						$(elem).find($('.vine-video'))[0].play();
-						$(elem).find($('.vine-video'))[0].onended = function() {
+					// 	$(elem).find($('.vine-video'))[0].play();
+					// 	$(elem).find($('.vine-video'))[0].onended = function() {
 
-							return callBack();
-						}
-					}
-					else if($(elem).find($('.fb-video')).length && $(elem).hasClass('in-focus')) {
+					// 		return callBack();
+					// 	}
+					// }
+					// else if($(elem).find($('.fb-video')).length && $(elem).hasClass('in-focus')) {
 
-						playFbVideo(0, duration, $(elem).find($('.fb-video'))[0].id, callBack);
-					}
-					else {
+					// 	playFbVideo(0, duration, $(elem).find($('.fb-video'))[0].id, callBack);
+					// }
+					// else {
 
 						setTimeout(function() {
 
 							return callBack();
 						}, duration);
-					}
+					// }
 				}
 			});
 		}, 3000);

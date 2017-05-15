@@ -32,9 +32,11 @@ $(document).ready(function() {
 			$('body').css('background-image', 'url(' + theme[0].background_image + ')');
 		}
 
-		$('body, .tile, .slide, .post-details, .post-text').css({
+		$(/*body, */'.tile, .slide, .post-details, .post-text').css({
 			'background-color': theme[0].background_color
 		});
+
+		$('body').css({'background': 'linear-gradient(to right, #00928f 0%, #50b848 100%)'});
 
 		$('.tile, .slide').css({
 			'border-color': theme[0].border_color
@@ -143,9 +145,9 @@ $(document).ready(function() {
 					}
 					else {
 
-						// $(tile).css({
-						// 	'background-image': 'url(../../assets/twitterLogo_blue.png)'
-						// });
+						$(tile).css({
+							'background-image': 'url(../../assets/twitterLogo_blue.png)'
+						});
 					}
 				}
 

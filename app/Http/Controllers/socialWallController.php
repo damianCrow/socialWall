@@ -416,4 +416,10 @@ echo ' after ' . Count($this->responseArray) . ' Tweets';
   		return json_encode($response);
   	}
   }
+
+  public function socialWallRefresh($id) {
+
+  	posts::where('socialwall_id', '=', $id) -> delete();
+  	return redirect()->action('socialWallController@show', ['id' => $id]);
+  }
 }
